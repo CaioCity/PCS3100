@@ -1,17 +1,11 @@
 import pygame
 import pygame.midi
 import json
-import random
 import sys
 
 # Carrega as notas musicais
-with open("notas_Happy_Birthday.json", "r") as f:
+with open("notas.json", "r") as f:
     notasjson = json.load(f)
-
-duracao_media = 0
-for nota in notasjson:
-    duracao_media += nota['duracao']
-duracao_media/=len(notasjson)
 
 # Inicialização
 pygame.init()
@@ -20,6 +14,7 @@ player = pygame.midi.Output(pygame.midi.get_default_output_id())
 player.set_instrument(0)
 
 LARGURA, ALTURA = 400, 600
+ALTURA_ACERTO = ALTURA - 100
 MAX_ERROS = 20
 TELA = pygame.display.set_mode((LARGURA, ALTURA))
 pygame.display.set_caption("Piano Tiles")
@@ -49,6 +44,8 @@ TECLAS = [pygame.K_q, pygame.K_w, pygame.K_e, pygame.K_r]
 pygame.mixer.init()
 notas_ativas = []
 NOTA_VOLUME = 1.0
+
+# Posso usar isso gerar um "som ao toque" para os botões no menu
 # sons = [
 #     pygame.mixer.Sound('piano1.wav'),
 #     pygame.mixer.Sound('piano2.wav'),
@@ -95,11 +92,11 @@ def atualizar_notas():
 
 # Classe Nota
 class Nota:
-    def __init__(self, coluna, index):
+    def __init__(self, index):
         self.index = index
-        self.coluna = coluna
-        self.x = coluna * LARGURA_COLUNA
-        self.y = - (int(200 * notasjson[index]['duracao']/duracao_media))
+        self.coluna = notasjson[index]['coluna']
+        self.x = self.coluna * LARGURA_COLUNA
+        self.y = - min(400,max(200*notasjson[index]['M_altura'],100))
         self.largura = LARGURA_COLUNA
         self.altura = - self.y
         self.velocidade = 5
@@ -113,12 +110,15 @@ class Nota:
     # Retorna True se a nota tiver sido acertada
     def colidiu(self):
         return self.y + self.altura >= ALTURA - 100 and self.y <= ALTURA - 100
+    
+    def calcular_pontos(self):
+        return int(100* (ALTURA_ACERTO - self.y)/self.altura)
 
 
 # Função para desenhar erros
 def mostrar_erro(tela, coluna):
     for i in range(1000):
-        pygame.draw.rect(tela, VERMELHO, (coluna*LARGURA_COLUNA, ALTURA - 200, LARGURA_COLUNA, 200))
+        pygame.draw.rect(tela, VERMELHO, (coluna*LARGURA_COLUNA, 0, LARGURA_COLUNA, 600))
 
 
 # Função para desenhar textos centralizados
@@ -288,7 +288,8 @@ def jogar():
     pontos = 0
     erros = 0
     fim = 200
-    tempo_ultima = pygame.time.get_ticks()
+    inicio_musica = None
+    inicio_jogo = pygame.time.get_ticks()
     coluna_ultima = 0
     intervalo = 700
 
@@ -304,7 +305,7 @@ def jogar():
             pygame.draw.line(TELA, CINZA, (i*LARGURA_COLUNA, 0), (i*LARGURA_COLUNA, ALTURA), 2)
 
         # Linha de acerto
-        pygame.draw.rect(TELA, VERMELHO, (0, ALTURA-100, LARGURA, 5))
+        pygame.draw.rect(TELA, VERMELHO, (0, ALTURA_ACERTO, LARGURA, 5))
 
         # Botão de pausa
         pygame.draw.rect(TELA, CINZA, (LARGURA-60, 13, 50, 30))
@@ -331,7 +332,7 @@ def jogar():
                             colisao = True
                             tocar_nota(nota.index)
                             notas.remove(nota)
-                            pontos += 1
+                            pontos += nota.calcular_pontos()
                             break
                     if colisao == False:
                         mostrar_erro(TELA, idx)
@@ -361,19 +362,13 @@ def jogar():
         # Gera nova nota
         # if agora - tempo_ultima > intervalo and notas_index < len(notasjson):    
 
-        if notas_index==0:
-            coluna_proxima = random.randint(0, COLUNAS-1)
-            notas.append(Nota(coluna_proxima, notas_index))
-            coluna_ultima = coluna_proxima
-            tempo_ultima = agora
-            notas_index+=1
-        elif notas_index < len(notasjson)  and notas[len(notas)-1].y >= notas[len(notas)-1].altura :    
-            coluna_proxima = random.randint(0, COLUNAS-1)
-            while(coluna_ultima == coluna_proxima):
-                coluna_proxima = random.randint(0, COLUNAS-1)
-            notas.append(Nota(coluna_proxima, notas_index))
-            coluna_ultima = coluna_proxima
-            tempo_ultima = agora
+        if notas_index == 0: 
+            if agora - inicio_jogo >= intervalo:
+                notas.append(Nota(notas_index))
+                inicio_musica = agora
+                notas_index+=1
+        elif notas_index < len(notasjson) and agora - inicio_musica >= int(notasjson[notas_index]["inicio"]*1000):    
+            notas.append(Nota(notas_index))
             notas_index+=1
         
 
