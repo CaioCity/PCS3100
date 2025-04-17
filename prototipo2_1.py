@@ -1,11 +1,3 @@
-# https://www.rapidtables.com/web/color/RGB_Color.html
-# mudar cores
-# otimizar
-
-# a forma de tocar o som mudou, oq fez o jogo rodar liso, sem travar
-
-# Testar sincronizar o surgimento das notas
-
 import pygame
 import pygame.midi
 import json
@@ -15,11 +7,6 @@ import sys
 # Carrega as notas musicais
 with open("notas_Happy_Birthday.json", "r") as f:
     notasjson = json.load(f)
-
-duracao_media = 0
-for nota in notasjson:
-    duracao_media += nota['duracao']
-duracao_media/=len(notasjson)
 
 # Inicialização
 pygame.init()
@@ -103,13 +90,13 @@ def atualizar_notas():
 
 # Classe Nota
 class Nota:
-    def __init__(self, coluna, index):
+    def __init__(self, index):
         self.index = index
-        self.coluna = coluna
-        self.x = coluna * LARGURA_COLUNA
-        self.y = - (int(200 * notasjson[index]['duracao']/duracao_media))
+        self.coluna = notasjson[index]['coluna']
+        self.x = self.coluna * LARGURA_COLUNA
+        self.y = -200
         self.largura = LARGURA_COLUNA
-        self.altura = - self.y
+        self.altura = 200
         self.velocidade = 5
 
     def atualizar(self):
@@ -126,7 +113,7 @@ class Nota:
 # Função para desenhar erros
 def mostrar_erro(tela, coluna):
     for i in range(1000):
-        pygame.draw.rect(tela, VERMELHO, (coluna*LARGURA_COLUNA, ALTURA - 200, LARGURA_COLUNA, 200))
+        pygame.draw.rect(tela, VERMELHO, (coluna*LARGURA_COLUNA, 0, LARGURA_COLUNA, 600))
 
 
 # Função para desenhar textos centralizados
@@ -367,23 +354,11 @@ def jogar():
         atualizar_notas()
 
         # Gera nova nota
-        # if agora - tempo_ultima > intervalo and notas_index < len(notasjson):    
+        if agora - tempo_ultima > intervalo and notas_index < len(notasjson):    
+            notas.append(Nota(notas_index))
+            tempo_ultima = agora
+            notas_index+=1
 
-        if notas_index==0:
-            coluna_proxima = random.randint(0, COLUNAS-1)
-            notas.append(Nota(coluna_proxima, notas_index))
-            coluna_ultima = coluna_proxima
-            tempo_ultima = agora
-            notas_index+=1
-        elif notas_index < len(notasjson)  and notas[len(notas)-1].y >= notas[len(notas)-1].altura :    
-            coluna_proxima = random.randint(0, COLUNAS-1)
-            while(coluna_ultima == coluna_proxima):
-                coluna_proxima = random.randint(0, COLUNAS-1)
-            notas.append(Nota(coluna_proxima, notas_index))
-            coluna_ultima = coluna_proxima
-            tempo_ultima = agora
-            notas_index+=1
-        
 
         # Carrega a tela de vitória
         if notas_index >= len(notasjson):
