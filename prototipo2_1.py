@@ -1,11 +1,3 @@
-# https://www.rapidtables.com/web/color/RGB_Color.html
-# mudar cores
-# otimizar
-
-# a forma de tocar o som mudou, oq fez o jogo rodar liso, sem travar
-
-# Testar sincronizar o surgimento das notas
-
 import pygame
 import pygame.midi
 import json
