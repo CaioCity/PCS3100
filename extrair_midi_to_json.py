@@ -2,9 +2,7 @@ def dispersao(lista):
     maximo = max(lista)
     minimo = min(lista)
     print(f"Amplitude = {maximo - minimo}")
-    soma = 0
-    for i in lista:
-        soma+=i
+    soma = sum(lista)
     media = soma/len(lista)
     print(f"Média = {media}")
     soma = 0
@@ -72,15 +70,26 @@ eventos = carregar_eventos_midi_sem_colunas_repetidas("Happy_Birthday.mid")
 
 # vdd = True
 # for e in eventos:
-#     if e["intensidade"]!= 50:
+#     if e["intensidade"]!= 49:
 #         vdd = False
 # print(vdd)
 
-# duracao = []
+for e in eventos:
+    e["intensidade"] = 127
+
+# parametro = []
 # for e in eventos:
-#     duracao.append(e["duracao"])
-# duracao.pop()
-# dispersao(duracao)
+#     parametro.append(e["intensidade"])
+# print("Dispersão de intensidade:")
+# dispersao(parametro)
+
+duracao_media = 0
+for e in eventos:
+    duracao_media += e["duracao"]
+duracao_media/=len(eventos)
+
+for e in eventos:
+    e["M_altura"] = e["duracao"]/duracao_media
 
 # for e in eventos: 
 #     print(f"Nota {e['nota']} | Início: {e['inicio']}s | Duração: {e['duracao']}s | Força: {e['intensidade']} | Coluna: {e['coluna']}")

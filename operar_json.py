@@ -1,44 +1,57 @@
+import pygame
 import pygame.midi
 import json
-import time
 
-# Inicializa pygame e módulo midi
+# Inicializa pygame e MIDI
 pygame.init()
 pygame.midi.init()
+screen = pygame.display.set_mode((640, 480))
+clock = pygame.time.Clock()
 
-# Abre o dispositivo MIDI padrão
 player = pygame.midi.Output(pygame.midi.get_default_output_id())
-
-# Define o instrumento (0 = piano)
 player.set_instrument(0)
 
-# Carrega notas do JSON
-with open("notas_Happy_Birthday.json", "r") as f:
+# Carrega as notas
+with open("notas.json", "r") as f:
     notas = json.load(f)
 
-def tocar_nota_por_index(index):
-    # if index < 0 or index >= len(notas):
-    #     print("Índice fora do intervalo!")
-    #     return
+# Variáveis de controle
+start_ticks = pygame.time.get_ticks()
+nota_index = 0
+notas_tocando = []  # lista de notas ativas com seus tempos de desligar
 
-    nota_info = notas[index]
-    
-    nota = nota_info["nota"]
-    duracao = nota_info["duracao"]
-    intensidade = nota_info.get("intensidade", 100)
+running = True
+while running:
+    now = pygame.time.get_ticks() - start_ticks  # tempo atual em ms
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
 
-    # print(f"Tocando nota {nota} | Duração: {duracao}s | Intensidade: {intensidade}")
+    # Tocar nova nota se for hora
+    while nota_index < len(notas):
+        nota = notas[nota_index]
+        inicio_ms = int(nota["inicio"] * 1000)
 
-    player.note_on(nota, intensidade)
-    time.sleep(duracao)
-    player.note_off(nota, intensidade)
+        if now >= inicio_ms:
+            player.note_on(nota["nota"], nota["intensidade"])
+            fim_nota = now + int(nota["duracao"] * 1000)
+            notas_tocando.append((nota["nota"], nota["intensidade"], fim_nota))
+            nota_index += 1
+        else:
+            break  # espera o momento certo
 
-# Exemplo: Tocar todas as notas
-for j in range(100):
-    for i in range(len(notas)):
-        tocar_nota_por_index(i)
+    # Desliga notas que passaram do tempo
+    for nota in notas_tocando[:]:
+        if now >= nota[2]:
+            player.note_off(nota[0], nota[1])
+            notas_tocando.remove(nota)
 
-# Finaliza o MIDI
+    # Aqui você pode desenhar as colunas e blocos caindo com base em nota["coluna"]
+
+    pygame.display.flip()
+    clock.tick(60)
+
+# Encerramento
 del player
 pygame.midi.quit()
 pygame.quit()
