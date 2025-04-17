@@ -12,7 +12,7 @@ player = pygame.midi.Output(pygame.midi.get_default_output_id())
 player.set_instrument(0)
 
 # Carrega as notas
-with open("notas_Happy_Birthday.json", "r") as f:
+with open("notas.json", "r") as f:
     notas = json.load(f)
 
 # Variáveis de controle
