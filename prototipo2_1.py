@@ -90,10 +90,10 @@ def atualizar_notas():
 
 # Classe Nota
 class Nota:
-    def __init__(self, coluna, index):
+    def __init__(self, index):
         self.index = index
-        self.coluna = coluna
-        self.x = coluna * LARGURA_COLUNA
+        self.coluna = notasjson[index]['coluna']
+        self.x = self.coluna * LARGURA_COLUNA
         self.y = -200
         self.largura = LARGURA_COLUNA
         self.altura = 200
@@ -113,7 +113,7 @@ class Nota:
 # Função para desenhar erros
 def mostrar_erro(tela, coluna):
     for i in range(1000):
-        pygame.draw.rect(tela, VERMELHO, (coluna*LARGURA_COLUNA, ALTURA - 200, LARGURA_COLUNA, 200))
+        pygame.draw.rect(tela, VERMELHO, (coluna*LARGURA_COLUNA, 0, LARGURA_COLUNA, 600))
 
 
 # Função para desenhar textos centralizados
@@ -355,11 +355,7 @@ def jogar():
 
         # Gera nova nota
         if agora - tempo_ultima > intervalo and notas_index < len(notasjson):    
-            coluna_proxima = random.randint(0, COLUNAS-1)
-            while(coluna_ultima == coluna_proxima):
-                coluna_proxima = random.randint(0, COLUNAS-1)
-            notas.append(Nota(coluna_proxima, notas_index))
-            coluna_ultima = coluna_proxima
+            notas.append(Nota(notas_index))
             tempo_ultima = agora
             notas_index+=1
 
