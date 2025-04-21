@@ -15,7 +15,7 @@ player.set_instrument(0)
 
 LARGURA, ALTURA = 400, 600
 ALTURA_ACERTO = ALTURA - 100
-MAX_ERROS = 20
+MAX_ERROS = 1000
 TELA = pygame.display.set_mode((LARGURA, ALTURA))
 pygame.display.set_caption("Piano Tiles")
 clock = pygame.time.Clock()
@@ -68,18 +68,18 @@ NOTA_VOLUME = 1.0
 # Função que emite o som da nota 
 def tocar_nota(index):
     agora = pygame.time.get_ticks()
-    nota = notasjson[index]
-    velocidade = max(0, min(127, int(nota["intensidade"] * NOTA_VOLUME)))
-    duracao_ms = int(nota["duracao"] * 1000)
+    for nota in notasjson[index]:
+        velocidade = max(0, min(127, int(nota["intensidade"] * NOTA_VOLUME)))
+        duracao_ms = int(nota["duracao"] * 1000)
 
-    player.note_on(nota["nota"], velocidade)
+        player.note_on(nota["nota"], velocidade)
 
-    # Adiciona a nota à lista de notas ativas
-    notas_ativas.append({
-        "nota": nota["nota"],
-        "velocidade": velocidade,
-        "desligar_em": agora + duracao_ms
-    })
+        # Adiciona a nota à lista de notas ativas
+        notas_ativas.append({
+            "nota": nota["nota"],
+            "velocidade": velocidade,
+            "desligar_em": agora + duracao_ms
+        })
 
 # Função que gerencia as durações das notas
 def atualizar_notas():
@@ -94,9 +94,9 @@ def atualizar_notas():
 class Nota:
     def __init__(self, index):
         self.index = index
-        self.coluna = notasjson[index]['coluna']
+        self.coluna = notasjson[index][0]['coluna']
         self.x = self.coluna * LARGURA_COLUNA
-        self.y = - min(400,max(200*notasjson[index]['M_altura'],100))
+        self.y = - min(400,max(200*notasjson[index][0]['M_altura'],120))
         self.largura = LARGURA_COLUNA
         self.altura = - self.y
         self.velocidade = 5
@@ -367,7 +367,7 @@ def jogar():
                 notas.append(Nota(notas_index))
                 inicio_musica = agora
                 notas_index+=1
-        elif notas_index < len(notasjson) and agora - inicio_musica >= int(notasjson[notas_index]["inicio"]*1000):    
+        elif notas_index < len(notasjson) and agora - inicio_musica >= int(notasjson[notas_index][0]["inicio"]*1000):    
             notas.append(Nota(notas_index))
             notas_index+=1
         
