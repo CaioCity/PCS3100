@@ -100,7 +100,7 @@ eventos = carregar_eventos_midi_sem_colunas_repetidas("Patrick Watson - Je te la
 # print(vdd)
 
 for e in eventos:
-    e["intensidade"] = 50
+    e["intensidade"] = 127
 
 # parametro = []
 # for e in eventos:
