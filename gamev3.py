@@ -13,15 +13,16 @@ pygame.midi.init()
 player = pygame.midi.Output(pygame.midi.get_default_output_id())
 player.set_instrument(0)
 
-LARGURA, ALTURA = 400, 600
+LARGURA, ALTURA = 460, 600
 ALTURA_ACERTO = ALTURA - 100
-MAX_ERROS = 1000
+MAX_ERROS = 5
 TELA = pygame.display.set_mode((LARGURA, ALTURA))
-pygame.display.set_caption("Piano Tiles")
+pygame.display.set_caption("PoliTiles")
 clock = pygame.time.Clock()
 FPS = 60
 
 # Cores
+MARROM = (176, 106, 0)
 PRETO = (0, 0, 0)
 BRANCO = (255, 255, 255)
 AZUL = (65, 132, 233)
@@ -32,6 +33,7 @@ CINZA = (100, 100, 100)
 AMARELO = (255, 255, 0)
 
 # Fontes
+fonte_pequena = pygame.font.SysFont("Arial", 20)
 fonte = pygame.font.SysFont("Arial", 24)
 fonte_grande = pygame.font.SysFont("Arial", 36)
 
@@ -43,21 +45,21 @@ TECLAS = [pygame.K_q, pygame.K_w, pygame.K_e, pygame.K_r]
 # Sons
 pygame.mixer.init()
 notas_ativas = []
-NOTA_VOLUME = 1.0
+NOTA_VOLUME = 0.5
 
 # Posso usar isso gerar um "som ao toque" para os botões no menu
-# sons = [
-#     pygame.mixer.Sound('piano1.wav'),
-#     pygame.mixer.Sound('piano2.wav'),
-#     pygame.mixer.Sound('piano3.wav'),
-#     pygame.mixer.Sound('piano4.wav')
-# ]
+sons = [
+    pygame.mixer.Sound('piano1.wav'),
+    pygame.mixer.Sound('piano2.wav'),
+    pygame.mixer.Sound('piano3.wav'),
+    pygame.mixer.Sound('piano4.wav')
+]
 
 # Música de fundo
-# pygame.mixer.music.load('fundo.mp3')
-# pygame.mixer.music.set_volume(0.10)
-# for s in sons:
-#     s.set_volume(0.2)
+pygame.mixer.music.load('moonlight-sonata-classical-piano-beethoven.mp3')
+pygame.mixer.music.set_volume(0.05)
+for s in sons:
+    s.set_volume(0.05)
 
 
 
@@ -95,24 +97,37 @@ class Nota:
     def __init__(self, index):
         self.index = index
         self.coluna = notasjson[index][0]['coluna']
-        self.x = self.coluna * LARGURA_COLUNA
+        self.raio = LARGURA_COLUNA/2
+        self.x = self.coluna * LARGURA_COLUNA + LARGURA_COLUNA/2 + 1
         self.y = - min(400,max(200*notasjson[index][0]['M_altura'],120))
+        self.y = - self.raio*2
         self.largura = LARGURA_COLUNA
         self.altura = - self.y
         self.velocidade = 5
+        self.cor = None
+        match self.coluna:
+            case 0:
+                self.cor = VERMELHO
+            case 1:
+                self.cor = AMARELO
+            case 2:
+                self.cor = AZUL
+            case 3:
+                self.cor = VERDE
 
     def atualizar(self):
         self.y += self.velocidade
 
     def desenhar(self, tela):
-        pygame.draw.rect(tela, PRETO, (self.x, self.y, self.largura, self.altura))
+        # pygame.draw.rect(tela, PRETO, (self.x, self.y, self.largura, self.altura))
+        pygame.draw.circle(tela, self.cor, (self.x,self.y), self.raio)
 
     # Retorna True se a nota tiver sido acertada
     def colidiu(self):
-        return self.y + self.altura >= ALTURA - 100 and self.y <= ALTURA - 100
+        return self.y + self.raio >= ALTURA_ACERTO and self.y - self.raio <= ALTURA_ACERTO
     
     def calcular_pontos(self):
-        return int(100* (ALTURA_ACERTO - self.y)/self.altura)
+        return int(100* (ALTURA_ACERTO - (self.y - self.raio))/(2*self.raio))
 
 
 # Função para desenhar erros
@@ -128,26 +143,28 @@ def desenhar_texto(tela, texto, fonte, cor, centro):
     tela.blit(render, rect)
 
 
+def desenhar_direcionais(TELA):
+    pygame.draw.rect(TELA, MARROM, (20, int(ALTURA*0.95) - 30, 110, 45))
+    desenhar_texto(TELA, "Direcionais:", fonte_pequena, PRETO, (LARGURA//10 + 30, int(ALTURA*0.95) - 20))
+    desenhar_texto(TELA, "<", fonte, VERMELHO, (LARGURA//10, int(ALTURA*0.95)))
+    desenhar_texto(TELA, "^", fonte, AMARELO, (LARGURA//10 + 20, int(ALTURA*0.95) + 5))
+    desenhar_texto(TELA, "v", fonte, AZUL, (LARGURA//10 + 40, int(ALTURA*0.95)))
+    desenhar_texto(TELA, ">", fonte, VERDE, (LARGURA//10 + 60, int(ALTURA*0.95))) 
+
+
 # Menu Principal
 def menu_principal():
+    pygame.mixer.music.play(-1)
     opcoes = ["Jogar", "Níveis", "Tutorial", "Configurações"]
     selecao = 0
 
     while True:
-        TELA.fill(CINZA)
-        desenhar_texto(TELA, "Piano Tiles", fonte_grande, PRETO, (LARGURA//2, ALTURA//3))
+        TELA.fill(BEGE)
+        desenhar_texto(TELA, "PoliTiles", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
+        desenhar_direcionais(TELA)
+        
         for i, opcao in enumerate(opcoes):
-            # cor = BRANCO if i == selecao else CINZA
-            cor = PRETO
-            match i:
-                case 0:
-                    cor = VERMELHO
-                case 1:
-                    cor = AMARELO
-                case 2:
-                    cor = AZUL
-                case 3:
-                    cor = VERDE
+            cor = BRANCO if i == selecao else CINZA
             desenhar_texto(TELA, opcao, fonte, cor, (LARGURA//2, ALTURA//2 + i*40))
         pygame.display.flip()
 
@@ -156,31 +173,44 @@ def menu_principal():
                 pygame.quit()
                 sys.exit()
             if evento.type == pygame.KEYDOWN:
-                match evento.key:
-                    case pygame.K_q:
-                        selecao = 0
-                        jogar()
-                    case pygame.K_w:
-                        pass # Selecionar nível
-                    case pygame.K_e:
-                        pass # Tutorial
-                    case pygame.K_r:
-                        configuracoes()
+                if evento.key == pygame.K_UP:
+                    sons[0].play()
+                    selecao = (selecao - 1) % 4
+                elif evento.key == pygame.K_DOWN:
+                    sons[2].play()
+                    selecao = (selecao + 1) % 4
+                elif evento.key == pygame.K_RETURN:
+                    sons[3].play()
+                    match selecao:
+                        case 0:
+                            pygame.mixer.music.pause()
+                            jogar()
+                            pygame.mixer.music.unpause()
+                        case 1:
+                            pass # Selecionar nível
+                        case 2:
+                            pass # Tutorial
+                        case 3:
+                            pygame.mixer.music.pause()
+                            configuracoes()
+                            pygame.mixer.music.unpause()
+
 
 
 # Tela de Configurações
 def configuracoes():
     musica_volume = pygame.mixer.music.get_volume()
     global NOTA_VOLUME
-    # tecla_volume = sons[0].get_volume()
+    tecla_volume = sons[0].get_volume()
     selecao = 0
     global MAX_ERROS
 
     while True:
         TELA.fill(BEGE)
-        desenhar_texto(TELA, "Configurações", fonte_grande, BRANCO, (LARGURA//2, 80))
+        desenhar_texto(TELA, "Configurações", fonte_grande, MARROM, (LARGURA//2, 80))
+        desenhar_direcionais(TELA)
 
-        opcoes = [f"Música: {int(musica_volume*100)}%", f"Notas: {int(NOTA_VOLUME*100)}%", f"Erros permitidos: {MAX_ERROS}", "Voltar"]
+        opcoes = [f"Música de fundo: {int(musica_volume*100)}%", f"Efeitos sonoros de menu: {int(tecla_volume*100)}%", f"Notas: {int(NOTA_VOLUME*100)}%", f"Erros permitidos: {MAX_ERROS}", "Voltar"]
         for i, texto in enumerate(opcoes):
             cor = BRANCO if i == selecao else CINZA
             desenhar_texto(TELA, texto, fonte, cor, (LARGURA//2, 200 + i * 40))
@@ -193,76 +223,90 @@ def configuracoes():
                 sys.exit()
             elif evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_UP:
-                    selecao = (selecao - 1) % 4
+                    selecao = (selecao - 1) % 5
                 elif evento.key == pygame.K_DOWN:
-                    selecao = (selecao + 1) % 4
+                    selecao = (selecao + 1) % 5
                 elif evento.key == pygame.K_LEFT:
                     match selecao:
                         case 0:
                             musica_volume = max(0.0, musica_volume - 0.05)
-                            # pygame.mixer.music.set_volume(musica_volume)
+                            pygame.mixer.music.set_volume(musica_volume)
                         case 1:
-                            NOTA_VOLUME = max(0.0, NOTA_VOLUME - 0.05)
+                            tecla_volume = max(0.0, tecla_volume - 0.05)
+                            for s in sons:
+                                s.set_volume(tecla_volume)
                             # sons[0].play()
-                            # for s in sons:
-                            #     s.set_volume(NOTA_VOLUME)
-                            # Criar som exemplo
                         case 2:
-                            MAX_ERROS-=1
+                            NOTA_VOLUME = max(0.0, NOTA_VOLUME - 0.05)
+                        case 3:
+                            MAX_ERROS = max(MAX_ERROS - 1, 1)
                 elif evento.key == pygame.K_RIGHT:
                     match selecao:
                         case 0:
                             musica_volume = min(1.0, musica_volume + 0.05)
-                            # pygame.mixer.music.set_volume(musica_volume)
+                            pygame.mixer.music.set_volume(musica_volume)
                         case 1:
-                            NOTA_VOLUME = min(1.0, NOTA_VOLUME + 0.05)
+                            tecla_volume = max(0.0, tecla_volume + 0.05)
+                            for s in sons:
+                                s.set_volume(tecla_volume)
                             # sons[0].play()
-                            # for s in sons:
-                            #     s.set_volume(NOTA_VOLUME)
-                            # criar exemplo
                         case 2:
+                            NOTA_VOLUME = min(1.0, NOTA_VOLUME + 0.05)
+                        case 3:
                             MAX_ERROS+=1
                 elif evento.key == pygame.K_ESCAPE:
                     return
-                elif evento.key == pygame.K_RETURN and selecao == 3:
+                elif evento.key == pygame.K_RETURN and selecao == 4:
                     return
 
 
 # Tela de início
 def tela_inicio():
-    TELA.fill(CINZA)
-    desenhar_texto(TELA, "Piano Tiles", fonte_grande, PRETO, (LARGURA//2, ALTURA//3))
-    desenhar_texto(TELA, "Pressione ENTER para começar", fonte, PRETO, (LARGURA//2, ALTURA//2))
+    TELA.fill(BEGE)
+    desenhar_texto(TELA, "PoliTiles", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
+    desenhar_texto(TELA, "Pressione ENTER para começar", fonte, CINZA, (LARGURA//2, ALTURA//2))
     pygame.display.flip()
     esperar_tecla(pygame.K_RETURN)
+    TELA.fill(BEGE)
+    desenhar_texto(TELA, "3", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
+    pygame.display.flip()
+    pygame.time.delay(1000)
+    TELA.fill(BEGE)
+    desenhar_texto(TELA, "2", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
+    pygame.display.flip()
+    pygame.time.delay(1000)
+    TELA.fill(BEGE)
+    desenhar_texto(TELA, "1", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
+    pygame.display.flip()
+    pygame.time.delay(1000)
 
 
 # Tela de pause
 def tela_pause():
-    TELA.fill(CINZA)
-    desenhar_texto(TELA, "Jogo pausado.", fonte_grande, BRANCO, (LARGURA//2, ALTURA//3 + 40))
-    desenhar_texto(TELA, "Pressione ESPAÇO para retomar", fonte, BRANCO, (LARGURA//2, ALTURA//2))
+    TELA.fill(BEGE)
+    desenhar_texto(TELA, "Jogo pausado.", fonte_grande, MARROM, (LARGURA//2, ALTURA//3 + 40))
+    desenhar_texto(TELA, "Pressione ESPAÇO para retomar", fonte, CINZA, (LARGURA//2, ALTURA//2))
     pygame.display.flip()
     esperar_tecla(pygame.K_SPACE)
 
 
 # Tela de derrota
 def tela_derrota(pontos):
-    TELA.fill(CINZA)
+    TELA.fill(BEGE)
     desenhar_texto(TELA, "Fim de Jogo!", fonte_grande, VERMELHO, (LARGURA//2, ALTURA//3))
-    desenhar_texto(TELA, f"Pontos: {pontos}", fonte, BRANCO, (LARGURA//2, ALTURA//2))
-    desenhar_texto(TELA, "Pressione ENTER para sair", fonte, BRANCO, (LARGURA//2, ALTURA//2 + 40))
+    desenhar_texto(TELA, f"Pontos: {pontos}", fonte, CINZA, (LARGURA//2, ALTURA//2))
+    desenhar_texto(TELA, "Pressione ENTER para sair", fonte, CINZA, (LARGURA//2, ALTURA//2 + 40))
     pygame.display.flip()
     esperar_tecla(pygame.K_RETURN)
 
 
 # Tela de vitória
 def tela_vitoria(pontos):
-    TELA.fill(CINZA)
+    TELA.fill(BEGE)
     desenhar_texto(TELA, "Parabéns!", fonte_grande, VERMELHO, (LARGURA//2, ALTURA//3))
     desenhar_texto(TELA, "Você venceu!", fonte_grande, VERMELHO, (LARGURA//2, ALTURA//3 + 50))
-    desenhar_texto(TELA, f"Pontos: {pontos}", fonte, BRANCO, (LARGURA//2, ALTURA//2))
-    desenhar_texto(TELA, "Pressione ENTER para sair", fonte, BRANCO, (LARGURA//2, ALTURA//2 + 40))
+    desenhar_texto(TELA, f"Pontos: {pontos}", fonte, CINZA, (LARGURA//2, ALTURA//2))
+    desenhar_texto(TELA, "Pressione ENTER para sair", fonte, CINZA, (LARGURA//2, ALTURA//2 + 40))
     pygame.display.flip()
     esperar_tecla(pygame.K_RETURN)
 
@@ -297,7 +341,7 @@ def jogar():
     # pygame.mixer.music.play(-1)
 
     while True:
-        TELA.fill(AZUL)
+        TELA.fill(BEGE)
         agora = pygame.time.get_ticks()
 
         # Linhas verticais
