@@ -24,9 +24,9 @@ def reoganizar_colunas(grupos : list):
     return grupos
 
 def agrupar_notas(eventos : list):
-    i_lista = 0
+    i_lista = -1
     inicio = 0
-    eventos_agrupados = [[]]
+    eventos_agrupados = []
 
     for i in range(0,len(eventos)):
         if eventos[i]['inicio'] == inicio:
@@ -90,7 +90,7 @@ def carregar_eventos_midi_sem_colunas_repetidas(caminho_midi, colunas=4):
     return sorted(eventos, key=lambda x: x['inicio'])
 
 # Usar o caminho do seu .mid aqui
-eventos = carregar_eventos_midi_sem_colunas_repetidas("Patrick Watson - Je te laisserai des mots.mid")
+eventos = carregar_eventos_midi_sem_colunas_repetidas("Happy_Birthday.mid")
 
 
 # vdd = True
