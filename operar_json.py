@@ -30,12 +30,12 @@ while running:
     # Tocar nova nota se for hora
     while nota_index < len(notas):
         nota = notas[nota_index]
-        inicio_ms = int(nota["inicio"] * 1000)
+        inicio_ms = int(nota[0]["inicio"] * 1000)
 
         if now >= inicio_ms:
-            player.note_on(nota["nota"], nota["intensidade"])
-            fim_nota = now + int(nota["duracao"] * 1000)
-            notas_tocando.append((nota["nota"], nota["intensidade"], fim_nota))
+            player.note_on(nota[0]["nota"], nota[0]["intensidade"])
+            fim_nota = now + int(nota[0]["duracao"] * 1000)
+            notas_tocando.append((nota[0]["nota"], nota[0]["intensidade"], fim_nota))
             nota_index += 1
         else:
             break  # espera o momento certo
