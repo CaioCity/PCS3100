@@ -47,7 +47,7 @@ pygame.mixer.init()
 notas_ativas = []
 NOTA_VOLUME = 0.5
 
-# Posso usar isso gerar um "som ao toque" para os botões no menu
+# Gerar um "som ao toque" para os botões no menu
 sons = [
     pygame.mixer.Sound('piano1.wav'),
     pygame.mixer.Sound('piano2.wav'),
