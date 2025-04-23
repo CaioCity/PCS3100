@@ -196,7 +196,6 @@ def menu_principal():
                             pygame.mixer.music.unpause()
 
 
-
 # Tela de Configurações
 def configuracoes():
     musica_volume = pygame.mixer.music.get_volume()
@@ -260,13 +259,7 @@ def configuracoes():
                     return
 
 
-# Tela de início
-def tela_inicio():
-    TELA.fill(BEGE)
-    desenhar_texto(TELA, "PoliTiles", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
-    desenhar_texto(TELA, "Pressione ENTER para começar", fonte, CINZA, (LARGURA//2, ALTURA//2))
-    pygame.display.flip()
-    esperar_tecla(pygame.K_RETURN)
+def contagem_regressiva(TELA):
     TELA.fill(BEGE)
     desenhar_texto(TELA, "3", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
     pygame.display.flip()
@@ -279,6 +272,15 @@ def tela_inicio():
     desenhar_texto(TELA, "1", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
     pygame.display.flip()
     pygame.time.delay(1000)
+
+# Tela de início
+def tela_inicio():
+    TELA.fill(BEGE)
+    desenhar_texto(TELA, "PoliTiles", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
+    desenhar_texto(TELA, "Pressione ENTER para começar", fonte, CINZA, (LARGURA//2, ALTURA//2))
+    pygame.display.flip()
+    esperar_tecla(pygame.K_RETURN)
+    contagem_regressiva(TELA)
 
 
 # Tela de pause
