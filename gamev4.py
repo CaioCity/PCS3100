@@ -3,6 +3,7 @@ import pygame.midi
 import json
 import sys
 
+
 # Carrega as notas musicais
 with open("notas.json", "r") as f:
     notasjson = json.load(f)
@@ -33,9 +34,9 @@ CINZA = (100, 100, 100)
 AMARELO = (255, 255, 0)
 
 # Fontes
-fonte_pequena = pygame.font.SysFont("Arial", 20)
-fonte = pygame.font.SysFont("Arial", 24)
-fonte_grande = pygame.font.SysFont("Arial", 36)
+fonte_pequena = pygame.font.SysFont("Algerian", 20)
+fonte = pygame.font.SysFont("Algerian", 24)
+fonte_grande = pygame.font.SysFont("Algerian", 36)
 
 # Colunas e teclas
 COLUNAS = 4
@@ -144,12 +145,13 @@ def desenhar_texto(tela, texto, fonte, cor, centro):
 
 
 def desenhar_direcionais(TELA):
-    pygame.draw.rect(TELA, MARROM, (20, int(ALTURA*0.95) - 30, 110, 45))
+    arial = pygame.font.SysFont("Arial", 20)
+    pygame.draw.rect(TELA, MARROM, (10, int(ALTURA*0.95) - 30, 130, 45))
     desenhar_texto(TELA, "Direcionais:", fonte_pequena, PRETO, (LARGURA//10 + 30, int(ALTURA*0.95) - 20))
-    desenhar_texto(TELA, "<", fonte, VERMELHO, (LARGURA//10, int(ALTURA*0.95)))
-    desenhar_texto(TELA, "^", fonte, AMARELO, (LARGURA//10 + 20, int(ALTURA*0.95) + 5))
-    desenhar_texto(TELA, "v", fonte, AZUL, (LARGURA//10 + 40, int(ALTURA*0.95)))
-    desenhar_texto(TELA, ">", fonte, VERDE, (LARGURA//10 + 60, int(ALTURA*0.95))) 
+    desenhar_texto(TELA, "<", arial, VERMELHO, (LARGURA//10, int(ALTURA*0.95)))
+    desenhar_texto(TELA, "^", arial, AMARELO, (LARGURA//10 + 20, int(ALTURA*0.95) + 5))
+    desenhar_texto(TELA, "v", arial, AZUL, (LARGURA//10 + 40, int(ALTURA*0.95)))
+    desenhar_texto(TELA, ">", arial, VERDE, (LARGURA//10 + 60, int(ALTURA*0.95))) 
 
 
 # Menu Principal
@@ -356,7 +358,7 @@ def jogar():
         # Botão de pausa
         pygame.draw.rect(TELA, CINZA, (LARGURA-60, 13, 50, 30))
         desenhar_texto(TELA, "||", fonte, BRANCO, (LARGURA-35, 25))
-        desenhar_texto(TELA, "Espaço", pygame.font.SysFont("Arial", 14), BRANCO, (LARGURA-35, 55))
+        desenhar_texto(TELA, "Espaço", pygame.font.SysFont("Algerian", 14), BRANCO, (LARGURA-35, 55))
 
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
