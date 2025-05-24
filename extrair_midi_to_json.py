@@ -67,6 +67,12 @@ def regular_comprimento(eventos : list):
         e["M_altura"] = e["duracao"]/duracao_media
 
 
+def printar_eventos(eventos : list):
+    for e in eventos: 
+        print(f"Nota {e['nota']} | Início: {e['inicio']}s | Duração: {e['duracao']}s | Força: {e['intensidade']} | Coluna: {e['coluna']}")
+    print(f"Número de notas: {len(eventos)}")
+
+
 def carregar_eventos_midi_sem_colunas_repetidas(caminho_midi, colunas=4):
     mid = mido.MidiFile(caminho_midi)
     ticks_por_beat = mid.ticks_per_beat
@@ -114,12 +120,6 @@ def carregar_eventos_midi_sem_colunas_repetidas(caminho_midi, colunas=4):
     return sorted(eventos, key=lambda x: x['inicio'])
 
 
-def printar_eventos(eventos):
-    for e in eventos: 
-        print(f"Nota {e['nota']} | Início: {e['inicio']}s | Duração: {e['duracao']}s | Força: {e['intensidade']} | Coluna: {e['coluna']}")
-    print(f"Número de notas: {len(eventos)}")
-
-
 # Usar o caminho do seu .mid aqui
 eventos = carregar_eventos_midi_sem_colunas_repetidas("Happy_Birthday.mid")
 
@@ -133,7 +133,6 @@ regular_comprimento(eventos)
 # printar_eventos(eventos)
 
 agrupamentos = agrupar_notas(eventos)
-# print(f"Número de grupos: {len(agrupamentos)}")
 
 with open("notas.json", "w", encoding="utf-8") as f:
     json.dump(agrupamentos, f, indent=2)
