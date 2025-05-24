@@ -1,17 +1,31 @@
-def dispersao(lista):
+import mido
+import random
+import json
+
+def dispersao(parametro : str, eventos : list):
+
+    lista = []
+    for e in eventos:
+        lista.append(e[parametro])
+
     maximo = max(lista)
     minimo = min(lista)
-    print(f"Amplitude = {maximo - minimo}")
     soma = sum(lista)
     media = soma/len(lista)
-    print(f"Média = {media}")
+    
     soma = 0
     for i in lista:
         soma = (i-media)**2
+
     variancia = soma/len(lista)
     desv = variancia**(0.5)
+
+    print(f"Dispersão de {parametro}:")
+    print(f"Amplitude = {maximo - minimo}")
+    print(f"Média = {media}")
     print(f"Variancia = {variancia}")
     print(f"desvio padrão = {desv}")
+
 
 def reoganizar_colunas(grupos : list):
     coluna_anterior = grupos[0][0]['coluna']
@@ -23,25 +37,35 @@ def reoganizar_colunas(grupos : list):
     
     return grupos
 
+
 def agrupar_notas(eventos : list):
-    i_lista = -1
-    inicio = 0
+    i_lista = 0
+    inicio = None
     eventos_agrupados = []
 
     for i in range(0,len(eventos)):
         if eventos[i]['inicio'] == inicio:
             eventos_agrupados[i_lista].append(eventos[i])
         else: 
-            i_lista+=1
             eventos_agrupados.append([])
             eventos_agrupados[i_lista].append(eventos[i])
             inicio = eventos[i]['inicio']
+            i_lista+=1
     
     return reoganizar_colunas(eventos_agrupados)
 
-import mido
-import random
-import json
+
+def regular_comprimento(eventos : list):
+    # O comprimento a ser regulado nao eh o comprimento de onda da nota
+    # Trata-se do comprimento da nota a ser gerada na interface gráfica do jogo
+    duracao_media = 0
+    for e in eventos:
+        duracao_media += e["duracao"]
+    duracao_media/=len(eventos)
+
+    for e in eventos:
+        e["M_altura"] = e["duracao"]/duracao_media
+
 
 def carregar_eventos_midi_sem_colunas_repetidas(caminho_midi, colunas=4):
     mid = mido.MidiFile(caminho_midi)
@@ -72,7 +96,7 @@ def carregar_eventos_midi_sem_colunas_repetidas(caminho_midi, colunas=4):
                 if msg.note in tempos_notas_ativas:
                     inicio_s, velocity = tempos_notas_ativas.pop(msg.note)
                     duracao = tempo_s - inicio_s
-                    tentativa = msg.note % colunas
+                    tentativa = (msg.note  + random.randint(0, colunas-1)) % colunas
                     if tentativa == ultima_coluna:
                         outras_colunas = [i for i in range(colunas) if i != ultima_coluna]
                         tentativa = random.choice(outras_colunas)
@@ -89,36 +113,24 @@ def carregar_eventos_midi_sem_colunas_repetidas(caminho_midi, colunas=4):
 
     return sorted(eventos, key=lambda x: x['inicio'])
 
+
+def printar_eventos(eventos):
+    for e in eventos: 
+        print(f"Nota {e['nota']} | Início: {e['inicio']}s | Duração: {e['duracao']}s | Força: {e['intensidade']} | Coluna: {e['coluna']}")
+    print(f"Número de notas: {len(eventos)}")
+
+
 # Usar o caminho do seu .mid aqui
 eventos = carregar_eventos_midi_sem_colunas_repetidas("Happy_Birthday.mid")
-
-
-# vdd = True
-# for e in eventos:
-#     if e["intensidade"]!= 49:
-#         vdd = False
-# print(vdd)
 
 for e in eventos:
     e["intensidade"] = 127
 
-# parametro = []
-# for e in eventos:
-#     parametro.append(e["intensidade"])
-# print("Dispersão de intensidade:")
-# dispersao(parametro)
+# dispersao("intensidade", eventos)
 
-duracao_media = 0
-for e in eventos:
-    duracao_media += e["duracao"]
-duracao_media/=len(eventos)
+regular_comprimento(eventos)
 
-for e in eventos:
-    e["M_altura"] = e["duracao"]/duracao_media
-
-# for e in eventos: 
-#     print(f"Nota {e['nota']} | Início: {e['inicio']}s | Duração: {e['duracao']}s | Força: {e['intensidade']} | Coluna: {e['coluna']}")
-# print(f"Número de notas: {len(eventos)}")
+# printar_eventos(eventos)
 
 agrupamentos = agrupar_notas(eventos)
 # print(f"Número de grupos: {len(agrupamentos)}")
