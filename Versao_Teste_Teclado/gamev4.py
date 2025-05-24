@@ -157,8 +157,10 @@ def desenhar_direcionais(TELA):
 # Menu Principal
 def menu_principal():
     pygame.mixer.music.play(-1)
-    opcoes = ["Jogar", "Níveis", "Tutorial", "Configurações"]
+    opcoes = ["Jogar", "Músicas", "Tutorial", "Configurações"]
     selecao = 0
+    musica = 0
+    file = "Happy_Birthday.mid"
 
     while True:
         TELA.fill(BEGE)
@@ -189,7 +191,7 @@ def menu_principal():
                             jogar()
                             pygame.mixer.music.unpause()
                         case 1:
-                            pass # Selecionar nível
+                            musica, file = selecionar_musica(musica)
                         case 2:
                             pass # Tutorial
                         case 3:
@@ -197,6 +199,36 @@ def menu_principal():
                             configuracoes()
                             pygame.mixer.music.unpause()
 
+def selecionar_musica(index):
+    opcoes = ["Happy Birthday", "M2", "M3", "M4"]
+
+    while True:
+        TELA.fill(BEGE)
+        desenhar_texto(TELA, "Músicas", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
+        desenhar_texto(TELA, "Pressione o botão preto para sair", fonte_pequena, CINZA, (LARGURA//2, 4*ALTURA//5))
+
+        desenhar_direcionais(TELA)
+
+        desenhar_texto(TELA, "<  " + opcoes[index] + "  >", fonte, BRANCO, (LARGURA//2, ALTURA//2))
+        pygame.display.flip()
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_LEFT:
+                    index = (index - 1) % 4
+                elif evento.key == pygame.K_RIGHT:
+                    index = (index + 1) % 4
+                elif evento.key == pygame.K_RETURN:
+                    match index:
+                        case 0:
+                            return [0,"Happy_Birthday.mid"]
+                        case _:
+                            print("ERROR")
+                            return
+       
 
 # Tela de Configurações
 def configuracoes():
@@ -211,7 +243,7 @@ def configuracoes():
         desenhar_texto(TELA, "Configurações", fonte_grande, MARROM, (LARGURA//2, 80))
         desenhar_direcionais(TELA)
 
-        opcoes = [f"Música de fundo: {int(musica_volume*100)}%", f"Efeitos sonoros de menu: {int(tecla_volume*100)}%", f"Notas: {int(NOTA_VOLUME*100)}%", f"Erros permitidos: {MAX_ERROS}", "Voltar"]
+        opcoes = [f"Música de fundo: {int(musica_volume*100)}%", f"Efeitos sonoros de menu: {int(tecla_volume*100)}%", f"Volume das notas: {int(NOTA_VOLUME*100)}%", f"Erros permitidos: {MAX_ERROS}", "Voltar"]
         for i, texto in enumerate(opcoes):
             cor = BRANCO if i == selecao else CINZA
             desenhar_texto(TELA, texto, fonte, cor, (LARGURA//2, 200 + i * 40))
