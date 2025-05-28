@@ -136,9 +136,9 @@ threading.Thread(target=ler_serial, daemon=True).start()
 
 
 
-####################
-#     FUNCOES      #
-####################
+#####################
+# FUNCOES E CLASSES #
+#####################
 
 # Função que emite o som da nota 
 def tocar_nota(index):
@@ -156,6 +156,7 @@ def tocar_nota(index):
             "desligar_em": agora + duracao_ms
         })
 
+
 # Função que gerencia as durações das notas
 def atualizar_notas():
     agora = pygame.time.get_ticks()
@@ -163,6 +164,7 @@ def atualizar_notas():
         if agora >= nota["desligar_em"]:
             player.note_off(nota["nota"], nota["velocidade"])
             notas_ativas.remove(nota)
+
 
 # Classe Nota
 class Nota:
@@ -307,6 +309,7 @@ def menu_principal():
                             pygame.mixer.music.unpause()
                         case 4:
                             SAIR_DO_JOGO = True
+
 
 def selecionar_musica(index):
     global notasjson 
@@ -575,7 +578,7 @@ def jogar():
 
 
 #####################
-#    FIM TELAS    #
+#    FIM TELAS      #
 #####################
 
 
@@ -592,8 +595,10 @@ def jogar():
 
 
 
+###################
+#      MAIN      #
+###################
 
-# MAIN
 menu_principal()
 
 LER = False
