@@ -3,6 +3,7 @@ import random
 import json
 
 def dispersao(parametro : str, eventos : list):
+    # Utilizada para Debug e Analise
 
     lista = []
     for e in eventos:
@@ -26,7 +27,6 @@ def dispersao(parametro : str, eventos : list):
     print(f"Variancia = {variancia}")
     print(f"desvio padrão = {desv}")
 
-
 def reoganizar_colunas(grupos : list):
     coluna_anterior = grupos[0][0]['coluna']
 
@@ -36,7 +36,6 @@ def reoganizar_colunas(grupos : list):
         coluna_anterior = grupos[i][0]['coluna']
     
     return grupos
-
 
 def agrupar_notas(eventos : list):
     i_lista = 0
@@ -54,7 +53,6 @@ def agrupar_notas(eventos : list):
     
     return reoganizar_colunas(eventos_agrupados)
 
-
 def regular_comprimento(eventos : list):
     # O comprimento a ser regulado nao eh o comprimento de onda da nota
     # Trata-se do comprimento da nota a ser gerada na interface gráfica do jogo
@@ -66,12 +64,11 @@ def regular_comprimento(eventos : list):
     for e in eventos:
         e["M_altura"] = e["duracao"]/duracao_media
 
-
 def printar_eventos(eventos : list):
+    # Utilizada para Debug e Analise
     for e in eventos: 
         print(f"Nota {e['nota']} | Início: {e['inicio']}s | Duração: {e['duracao']}s | Força: {e['intensidade']} | Coluna: {e['coluna']}")
     print(f"Número de notas: {len(eventos)}")
-
 
 def carregar_eventos_midi_sem_colunas_repetidas(caminho_midi, colunas=4):
     mid = mido.MidiFile(caminho_midi)
@@ -119,20 +116,16 @@ def carregar_eventos_midi_sem_colunas_repetidas(caminho_midi, colunas=4):
 
     return sorted(eventos, key=lambda x: x['inicio'])
 
+def mid_to_json(file_name):
+    # Usar o caminho do seu .mid aqui
+    eventos = carregar_eventos_midi_sem_colunas_repetidas(file_name)
 
-# Usar o caminho do seu .mid aqui
-eventos = carregar_eventos_midi_sem_colunas_repetidas("Happy_Birthday.mid")
+    for e in eventos:
+        e["intensidade"] = 127
 
-for e in eventos:
-    e["intensidade"] = 127
+    regular_comprimento(eventos)
 
-# dispersao("intensidade", eventos)
+    agrupamentos = agrupar_notas(eventos)
 
-regular_comprimento(eventos)
-
-# printar_eventos(eventos)
-
-agrupamentos = agrupar_notas(eventos)
-
-with open("notas.json", "w", encoding="utf-8") as f:
-    json.dump(agrupamentos, f, indent=2)
+    with open("notas.json", "w", encoding="utf-8") as f:
+        json.dump(agrupamentos, f, indent=2)
