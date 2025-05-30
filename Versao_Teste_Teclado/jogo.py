@@ -2,9 +2,19 @@ import pygame
 import pygame.midi
 import json
 import sys
+import extract
 
+
+
+
+############################
+# Init pygame e Constantes #
+############################
+
+file_musica = "Happy_Birthday.mid"
 
 # Carrega as notas musicais
+extract.mid_to_json(file_musica)
 with open("notas.json", "r") as f:
     notasjson = json.load(f)
 
@@ -14,11 +24,12 @@ pygame.midi.init()
 player = pygame.midi.Output(pygame.midi.get_default_output_id())
 player.set_instrument(0)
 
-LARGURA, ALTURA = 460, 600
-ALTURA_ACERTO = ALTURA - 100
+NOME_DO_JOGO =  "PoliTiles"
+LARGURA_TELA, ALTURA_TELA = 460, 600
+ALTURA_LINHA_ACERTO = ALTURA_TELA - 100
 MAX_ERROS = 5
-TELA = pygame.display.set_mode((LARGURA, ALTURA))
-pygame.display.set_caption("PoliTiles")
+TELA = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
+pygame.display.set_caption(NOME_DO_JOGO)
 clock = pygame.time.Clock()
 FPS = 60
 
@@ -34,13 +45,13 @@ CINZA = (100, 100, 100)
 AMARELO = (255, 255, 0)
 
 # Fontes
-fonte_pequena = pygame.font.SysFont("Algerian", 20)
-fonte = pygame.font.SysFont("Algerian", 24)
-fonte_grande = pygame.font.SysFont("Algerian", 36)
+FONTE_PEQUENA = pygame.font.SysFont("Algerian", 20)
+FONTE = pygame.font.SysFont("Algerian", 24)
+FONTE_GRANDE = pygame.font.SysFont("Algerian", 36)
 
 # Colunas e teclas
-COLUNAS = 4
-LARGURA_COLUNA = LARGURA // COLUNAS
+N_COLUNAS = 4
+LARGURA_COLUNA = LARGURA_TELA // N_COLUNAS
 TECLAS = [pygame.K_q, pygame.K_w, pygame.K_e, pygame.K_r]
 
 # Sons
@@ -62,11 +73,24 @@ pygame.mixer.music.set_volume(0.05)
 for s in sons:
     s.set_volume(0.05)
 
+###################
+#  FIM INIT + CTE #
+###################
 
 
-#####################
-#     FUNCOES       #
-#####################
+
+
+
+
+
+
+
+
+
+
+########################
+#  FUNCOES E CLASSES   #
+########################
 
 # Função que emite o som da nota 
 def tocar_nota(index):
@@ -125,10 +149,10 @@ class Nota:
 
     # Retorna True se a nota tiver sido acertada
     def colidiu(self):
-        return self.y + self.raio >= ALTURA_ACERTO and self.y - self.raio <= ALTURA_ACERTO
+        return self.y + self.raio >= ALTURA_LINHA_ACERTO and self.y - self.raio <= ALTURA_LINHA_ACERTO
     
     def calcular_pontos(self):
-        return int(100* (ALTURA_ACERTO - (self.y - self.raio))/(2*self.raio))
+        return int(100* (ALTURA_LINHA_ACERTO - (self.y - self.raio))/(2*self.raio))
 
 
 # Função para desenhar erros
@@ -146,43 +170,80 @@ def desenhar_texto(tela, texto, fonte, cor, centro):
 
 def desenhar_direcionais(TELA):
     arial = pygame.font.SysFont("Arial", 20)
-    pygame.draw.rect(TELA, MARROM, (10, int(ALTURA*0.95) - 30, 130, 45))
-    desenhar_texto(TELA, "Direcionais:", fonte_pequena, PRETO, (LARGURA//10 + 30, int(ALTURA*0.95) - 20))
-    desenhar_texto(TELA, "<", arial, VERMELHO, (LARGURA//10, int(ALTURA*0.95)))
-    desenhar_texto(TELA, "^", arial, AMARELO, (LARGURA//10 + 20, int(ALTURA*0.95) + 5))
-    desenhar_texto(TELA, "v", arial, AZUL, (LARGURA//10 + 40, int(ALTURA*0.95)))
-    desenhar_texto(TELA, ">", arial, VERDE, (LARGURA//10 + 60, int(ALTURA*0.95))) 
+    pygame.draw.rect(TELA, MARROM, (10, int(ALTURA_TELA*0.95) - 30, 130, 45))
+    desenhar_texto(TELA, "Direcionais:", FONTE_PEQUENA, PRETO, (LARGURA_TELA//10 + 30, int(ALTURA_TELA*0.95) - 20))
+    desenhar_texto(TELA, "<", arial, VERMELHO, (LARGURA_TELA//10, int(ALTURA_TELA*0.95)))
+    desenhar_texto(TELA, "^", arial, AMARELO, (LARGURA_TELA//10 + 20, int(ALTURA_TELA*0.95) + 5))
+    desenhar_texto(TELA, "v", arial, AZUL, (LARGURA_TELA//10 + 40, int(ALTURA_TELA*0.95)))
+    desenhar_texto(TELA, ">", arial, VERDE, (LARGURA_TELA//10 + 60, int(ALTURA_TELA*0.95))) 
 
 
-# Menu Principal
-def menu_principal():
-    pygame.mixer.music.play(-1)
-    opcoes = ["Jogar", "Músicas", "Tutorial", "Configurações"]
-    selecao = 0
-    musica = 0
-    file = "Happy_Birthday.mid"
-
-    while True:
-        TELA.fill(BEGE)
-        desenhar_texto(TELA, "PoliTiles", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
-        desenhar_direcionais(TELA)
-        
-        for i, opcao in enumerate(opcoes):
-            cor = BRANCO if i == selecao else CINZA
-            desenhar_texto(TELA, opcao, fonte, cor, (LARGURA//2, ALTURA//2 + i*40))
-        pygame.display.flip()
-
+# Espera por tecla específica
+def esperar_tecla(tecla):
+    esperando = True
+    while esperando:
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            elif evento.type == pygame.KEYDOWN and evento.key == tecla:
+                esperando = False
+
+
+#####################
+#    FIM FUNCOES    #
+#####################
+
+
+
+
+
+
+
+
+
+
+
+
+
+###################
+#      TELAS      #
+###################
+
+
+# Menu Principal
+def menu_principal():
+    global file_musica
+    pygame.mixer.music.play(-1)
+    opcoes = ["Jogar", "Músicas", "Tutorial", "Configurações"]
+    N_opcoes = len(opcoes)
+    selecao = 0
+    musica = 0
+    file_musica = "Happy_Birthday.mid"
+
+    SAIR_DO_JOGO = False
+
+    while SAIR_DO_JOGO == False:
+        TELA.fill(BEGE)
+        desenhar_texto(TELA, NOME_DO_JOGO, FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
+        desenhar_direcionais(TELA)
+        
+        for i, opcao in enumerate(opcoes):
+            cor = BRANCO if i == selecao else CINZA
+            desenhar_texto(TELA, opcao, FONTE, cor, (LARGURA_TELA//2, ALTURA_TELA//2 + i*40))
+        
+        pygame.display.flip()
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                SAIR_DO_JOGO = True
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_UP:
                     sons[0].play()
-                    selecao = (selecao - 1) % 4
+                    selecao = (selecao - 1) % N_opcoes
                 elif evento.key == pygame.K_DOWN:
                     sons[2].play()
-                    selecao = (selecao + 1) % 4
+                    selecao = (selecao + 1) % N_opcoes
                 elif evento.key == pygame.K_RETURN:
                     sons[3].play()
                     match selecao:
@@ -191,7 +252,7 @@ def menu_principal():
                             jogar()
                             pygame.mixer.music.unpause()
                         case 1:
-                            musica, file = selecionar_musica(musica)
+                            musica, file_musica = selecionar_musica(musica)
                         case 2:
                             pass # Tutorial
                         case 3:
@@ -199,17 +260,20 @@ def menu_principal():
                             configuracoes()
                             pygame.mixer.music.unpause()
 
+
 def selecionar_musica(index):
+    global notasjson
     opcoes = ["Happy Birthday", "M2", "M3", "M4"]
+    N_opcoes = len(opcoes)
 
     while True:
         TELA.fill(BEGE)
-        desenhar_texto(TELA, "Músicas", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
-        desenhar_texto(TELA, "Pressione o botão preto para sair", fonte_pequena, CINZA, (LARGURA//2, 4*ALTURA//5))
+        desenhar_texto(TELA, "Músicas", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
+        desenhar_texto(TELA, "Pressione a tecla ENTER para sair", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, 4*ALTURA_TELA//5))
 
         desenhar_direcionais(TELA)
 
-        desenhar_texto(TELA, "<  " + opcoes[index] + "  >", fonte, BRANCO, (LARGURA//2, ALTURA//2))
+        desenhar_texto(TELA, "<  " + opcoes[index] + "  >", FONTE, BRANCO, (LARGURA_TELA//2, ALTURA_TELA//2))
         pygame.display.flip()
 
         for evento in pygame.event.get():
@@ -218,13 +282,15 @@ def selecionar_musica(index):
                 sys.exit()
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_LEFT:
-                    index = (index - 1) % 4
+                    index = (index - 1) % N_opcoes
                 elif evento.key == pygame.K_RIGHT:
-                    index = (index + 1) % 4
+                    index = (index + 1) % N_opcoes
                 elif evento.key == pygame.K_RETURN:
                     match index:
                         case 0:
-                            return [0,"Happy_Birthday.mid"]
+                            return index,"Happy_Birthday.mid"
+                        case 1:
+                            return index, "M2.mid"
                         case _:
                             print("ERROR")
                             return
@@ -232,21 +298,23 @@ def selecionar_musica(index):
 
 # Tela de Configurações
 def configuracoes():
-    musica_volume = pygame.mixer.music.get_volume()
     global NOTA_VOLUME
+    global MAX_ERROS
+    musica_volume = pygame.mixer.music.get_volume()
     tecla_volume = sons[0].get_volume()
     selecao = 0
-    global MAX_ERROS
 
     while True:
         TELA.fill(BEGE)
-        desenhar_texto(TELA, "Configurações", fonte_grande, MARROM, (LARGURA//2, 80))
+        desenhar_texto(TELA, "Configurações", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, 80))
         desenhar_direcionais(TELA)
 
         opcoes = [f"Música de fundo: {int(musica_volume*100)}%", f"Efeitos sonoros de menu: {int(tecla_volume*100)}%", f"Volume das notas: {int(NOTA_VOLUME*100)}%", f"Erros permitidos: {MAX_ERROS}", "Voltar"]
+        N_opcoes = len(opcoes)
+
         for i, texto in enumerate(opcoes):
             cor = BRANCO if i == selecao else CINZA
-            desenhar_texto(TELA, texto, fonte, cor, (LARGURA//2, 200 + i * 40))
+            desenhar_texto(TELA, texto, FONTE, cor, (LARGURA_TELA//2, 200 + i * 40))
 
         pygame.display.flip()
 
@@ -256,9 +324,9 @@ def configuracoes():
                 sys.exit()
             elif evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_UP:
-                    selecao = (selecao - 1) % 5
+                    selecao = (selecao - 1) % N_opcoes
                 elif evento.key == pygame.K_DOWN:
-                    selecao = (selecao + 1) % 5
+                    selecao = (selecao + 1) % N_opcoes
                 elif evento.key == pygame.K_LEFT:
                     match selecao:
                         case 0:
@@ -295,43 +363,50 @@ def configuracoes():
 
 def contagem_regressiva(TELA):
     TELA.fill(BEGE)
-    desenhar_texto(TELA, "3", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
+    desenhar_texto(TELA, "3", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
     pygame.display.flip()
     pygame.time.delay(1000)
     TELA.fill(BEGE)
-    desenhar_texto(TELA, "2", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
+    desenhar_texto(TELA, "2", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
     pygame.display.flip()
     pygame.time.delay(1000)
     TELA.fill(BEGE)
-    desenhar_texto(TELA, "1", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
+    desenhar_texto(TELA, "1", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
     pygame.display.flip()
     pygame.time.delay(1000)
 
-# Tela de início
-def tela_inicio():
+
+# Tela de aguardo
+def tela_aguardo():
+    global notasjson
+    global file_musica
     TELA.fill(BEGE)
-    desenhar_texto(TELA, "PoliTiles", fonte_grande, MARROM, (LARGURA//2, ALTURA//3))
-    desenhar_texto(TELA, "Pressione ENTER para começar", fonte, CINZA, (LARGURA//2, ALTURA//2))
+    desenhar_texto(TELA, "PoliTiles", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
+    desenhar_texto(TELA, "Pressione ENTER para começar", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//2))
     pygame.display.flip()
     esperar_tecla(pygame.K_RETURN)
+    extract.mid_to_json(file_musica)
+    with open("notas.json", "r") as f:
+        notasjson = json.load(f)
     contagem_regressiva(TELA)
 
 
 # Tela de pause
 def tela_pause():
     TELA.fill(BEGE)
-    desenhar_texto(TELA, "Jogo pausado.", fonte_grande, MARROM, (LARGURA//2, ALTURA//3 + 40))
-    desenhar_texto(TELA, "Pressione ESPAÇO para retomar", fonte, CINZA, (LARGURA//2, ALTURA//2))
+    desenhar_texto(TELA, "Jogo pausado.", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3 + 40))
+    desenhar_texto(TELA, "Pressione ESPAÇO para retomar", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//2))
     pygame.display.flip()
     esperar_tecla(pygame.K_SPACE)
+    contagem_regressiva(TELA)
 
 
 # Tela de derrota
 def tela_derrota(pontos):
     TELA.fill(BEGE)
-    desenhar_texto(TELA, "Fim de Jogo!", fonte_grande, VERMELHO, (LARGURA//2, ALTURA//3))
-    desenhar_texto(TELA, f"Pontos: {pontos}", fonte, CINZA, (LARGURA//2, ALTURA//2))
-    desenhar_texto(TELA, "Pressione ENTER para sair", fonte, CINZA, (LARGURA//2, ALTURA//2 + 40))
+    desenhar_texto(TELA, "Fim de Jogo!", FONTE_GRANDE, VERMELHO, (LARGURA_TELA//2, ALTURA_TELA//3))
+    desenhar_texto(TELA, f"Pontos: {pontos}", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//2))
+    desenhar_texto(TELA, "Pressione ENTER para sair", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//2 + 40))
     pygame.display.flip()
     esperar_tecla(pygame.K_RETURN)
 
@@ -339,27 +414,15 @@ def tela_derrota(pontos):
 # Tela de vitória
 def tela_vitoria(pontos):
     TELA.fill(BEGE)
-    desenhar_texto(TELA, "Parabéns!", fonte_grande, VERMELHO, (LARGURA//2, ALTURA//3))
-    desenhar_texto(TELA, "Você venceu!", fonte_grande, VERMELHO, (LARGURA//2, ALTURA//3 + 50))
-    desenhar_texto(TELA, f"Pontos: {pontos}", fonte, CINZA, (LARGURA//2, ALTURA//2))
-    desenhar_texto(TELA, "Pressione ENTER para sair", fonte, CINZA, (LARGURA//2, ALTURA//2 + 40))
+    desenhar_texto(TELA, "Parabéns!", FONTE_GRANDE, VERMELHO, (LARGURA_TELA//2, ALTURA_TELA//3))
+    desenhar_texto(TELA, "Você venceu!", FONTE_GRANDE, VERMELHO, (LARGURA_TELA//2, ALTURA_TELA//3 + 50))
+    desenhar_texto(TELA, f"Pontos: {pontos}", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//2))
+    desenhar_texto(TELA, "Pressione ENTER para sair", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//2 + 40))
     pygame.display.flip()
     esperar_tecla(pygame.K_RETURN)
 
 
-# Espera por tecla específica
-def esperar_tecla(tecla):
-    esperando = True
-    while esperando:
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif evento.type == pygame.KEYDOWN and evento.key == tecla:
-                esperando = False
-
-
-# Função principal do jogo
+# Função da tela operacional do jogo
 def jogar():
     global notasjson
     notas_index = 0
@@ -370,10 +433,9 @@ def jogar():
     fim = 200
     inicio_musica = None
     inicio_jogo = pygame.time.get_ticks()
-    coluna_ultima = 0
     intervalo = 700
 
-    tela_inicio()
+    tela_aguardo()
     # pygame.mixer.music.play(-1)
 
     while True:
@@ -381,29 +443,27 @@ def jogar():
         agora = pygame.time.get_ticks()
 
         # Linhas verticais
-        for i in range(1, COLUNAS):
-            pygame.draw.line(TELA, CINZA, (i*LARGURA_COLUNA, 0), (i*LARGURA_COLUNA, ALTURA), 2)
+        for i in range(1, N_COLUNAS):
+            pygame.draw.line(TELA, CINZA, (i*LARGURA_COLUNA, 0), (i*LARGURA_COLUNA, ALTURA_TELA), 2)
 
         # Linha de acerto
-        pygame.draw.rect(TELA, VERMELHO, (0, ALTURA_ACERTO, LARGURA, 5))
+        pygame.draw.rect(TELA, VERMELHO, (0, ALTURA_LINHA_ACERTO, LARGURA_TELA, 5))
 
         # Botão de pausa
-        pygame.draw.rect(TELA, CINZA, (LARGURA-60, 13, 50, 30))
-        desenhar_texto(TELA, "||", fonte, BRANCO, (LARGURA-35, 25))
-        desenhar_texto(TELA, "Espaço", pygame.font.SysFont("Algerian", 14), BRANCO, (LARGURA-35, 55))
+        pygame.draw.rect(TELA, CINZA, (LARGURA_TELA-60, 13, 50, 30))
+        desenhar_texto(TELA, "||", FONTE, BRANCO, (LARGURA_TELA-35, 25))
+        desenhar_texto(TELA, "Espaço", pygame.font.SysFont("Algerian", 14), BRANCO, (LARGURA_TELA-35, 55))
 
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             elif evento.type == pygame.KEYDOWN:
-                # Jogo pausado
-                if evento.key == pygame.K_SPACE:
+                if evento.key == pygame.K_SPACE: # Jogo pausado
                         # pygame.mixer.music.pause()
                         tela_pause()
                         # Sai da função quando o jogo é despausado
-                        # pygame.mixer.music.unpause()
-                        
+                        # pygame.mixer.music.unpause()                    
                 if evento.key in TECLAS:
                     idx = TECLAS.index(evento.key)
                     colisao = False
@@ -417,17 +477,17 @@ def jogar():
                     if colisao == False:
                         mostrar_erro(TELA, idx)
                         erros += 1
-                if erros >= MAX_ERROS:
-                    # pygame.mixer.music.stop()
-                    tela_derrota(pontos)
-                    return        
+                        if erros >= MAX_ERROS:
+                            # pygame.mixer.music.stop()
+                            tela_derrota(pontos)
+                            return        
 
         
         # Atualiza notas na tela
         for nota in notas[:]:
             nota.atualizar()
             nota.desenhar(TELA)
-            if nota.y > ALTURA:
+            if nota.y > ALTURA_TELA:
                 mostrar_erro(TELA, nota.coluna)
                 notas.remove(nota)
                 erros += 1
@@ -440,8 +500,7 @@ def jogar():
         atualizar_notas()
 
         # Gera nova nota
-        # if agora - tempo_ultima > intervalo and notas_index < len(notasjson):    
-
+       
         if notas_index == 0: 
             if agora - inicio_jogo >= intervalo:
                 notas.append(Nota(notas_index))
@@ -460,11 +519,31 @@ def jogar():
                 return
 
         # Pontuação e erros em tempo real
-        desenhar_texto(TELA, f"Pontos: {pontos}", fonte, BRANCO, (90, 20))
-        desenhar_texto(TELA, f"Erros: {erros}/{MAX_ERROS}", fonte, VERMELHO, (90, 50))
+        desenhar_texto(TELA, f"Pontos: {pontos}", FONTE, BRANCO, (90, 20))
+        desenhar_texto(TELA, f"Erros: {erros}/{MAX_ERROS}", FONTE, VERMELHO, (90, 50))
 
         pygame.display.flip()
         clock.tick(FPS)
 
+
+###################
+#    FIM TELAS    #
+###################
+
+
+
+
+
+
+
+
+###################
+#      MAIN      #
+###################
+
+
 # Início
 menu_principal()
+
+pygame.quit()
+sys.exit()
