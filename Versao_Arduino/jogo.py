@@ -25,6 +25,10 @@ N_COLUNAS = 4
 LARGURA_COLUNA = LARGURA_TELA // N_COLUNAS
 MAX_ERROS = 5
 
+# Fundo
+FUNDO_CARREGADO = pygame.image.load("fundo.jpeg")  # JPG, PNG, BMP, etc.
+FUNDO_CARREGADO = pygame.transform.scale(FUNDO_CARREGADO, (LARGURA_TELA, ALTURA_TELA))  
+# ^ Redimensiona para caber na tela
 
 # Cores
 MARROM = (176, 106, 0)
@@ -362,8 +366,11 @@ def menu_principal():
     SAIR_DO_JOGO = False
 
     while SAIR_DO_JOGO == False:
-        TELA.fill(BEGE)
-        desenhar_texto(TELA, NOME_DO_JOGO, FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
+
+        # Desenha o fundo personalizado para essa tela
+        TELA.blit(FUNDO_CARREGADO, (0, 0))
+
+        desenhar_texto(TELA, NOME_DO_JOGO, FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3 - 10))
         desenhar_direcionais(TELA)
         
         for i, opcao in enumerate(opcoes):
