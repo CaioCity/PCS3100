@@ -1,0 +1,22 @@
+{
+    "0": {
+        "nome": "Happy Birthday",
+        "arquivo": "Happy_Birthday.mid",
+        "recorde": 0
+    },
+    "1": {
+        "nome": "EXEMPLO_M1",
+        "arquivo": "M1.mid",
+        "recorde": 0
+    },
+    "2": {
+        "nome": "EXEMPLO_M2",
+        "arquivo": "M2.mid",
+        "recorde": 0
+    },
+    "3": {
+        "nome": "EXEMPLO_M3",
+        "arquivo": "M3.mid",
+        "recorde": 0
+    }
+}
