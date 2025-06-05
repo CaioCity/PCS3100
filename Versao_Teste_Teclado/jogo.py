@@ -33,6 +33,9 @@ pygame.display.set_caption(NOME_DO_JOGO)
 clock = pygame.time.Clock()
 FPS = 60
 
+FUNDO_CARREGADO = pygame.image.load("fundo_teste.jpeg")  # JPG, PNG, BMP, etc.
+FUNDO_CARREGADO = pygame.transform.scale(FUNDO_CARREGADO, (LARGURA_TELA, ALTURA_TELA))  # Redimensiona para caber na tela
+
 # Cores
 MARROM = (176, 106, 0)
 PRETO = (0, 0, 0)
@@ -224,8 +227,14 @@ def menu_principal():
     SAIR_DO_JOGO = False
 
     while SAIR_DO_JOGO == False:
-        TELA.fill(BEGE)
-        desenhar_texto(TELA, NOME_DO_JOGO, FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
+        
+
+
+         # Desenha o fundo
+        TELA.blit(FUNDO_CARREGADO, (0, 0))
+
+        # TELA.fill(BEGE)
+        desenhar_texto(TELA, NOME_DO_JOGO, FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3 - 10))
         desenhar_direcionais(TELA)
         
         for i, opcao in enumerate(opcoes):
