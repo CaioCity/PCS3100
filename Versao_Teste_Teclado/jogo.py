@@ -3,78 +3,49 @@ import pygame.midi
 import json
 import sys
 import extract
-
-
+from constants import PATH_MUSICA_DEFAULT, PATH_IMAGEM_FUNDO_PRINCIPAL, PATH_MUSICA_FUNDO
+from constants import NOME_JOGO, MAX_ERROS, FPS
+from constants import VERDE, AZUL, AMARELO, VERMELHO, PRETO, CINZA, BRANCO, MARROM, BEGE
+from constants import FONTE_PEQUENA, FONTE, FONTE_GRANDE, ARIAL20
+from constants import ALTURA_TELA, LARGURA_TELA, ALTURA_LINHA_ACERTO, LARGURA_COLUNA, N_COLUNAS
+from constants import NOTA_VOLUME, EFEITOS_SONOROS_VOLUME, MUSICA_FUNDO_VOLUME, SONS
 
 
 ############################
 # Init pygame e Constantes #
 ############################
 
-file_musica = "Happy_Birthday.mid"
-
 # Carrega as notas musicais
-extract.mid_to_json(file_musica)
+extract.mid_to_json(PATH_MUSICA_DEFAULT)
 with open("notas.json", "r") as f:
     notasjson = json.load(f)
 
-# Inicialização
+# Inicialização pygame
 pygame.init()
 pygame.midi.init()
 player = pygame.midi.Output(pygame.midi.get_default_output_id())
 player.set_instrument(0)
 
-NOME_DO_JOGO =  "PoliTiles"
-LARGURA_TELA, ALTURA_TELA = 460, 600
-ALTURA_LINHA_ACERTO = ALTURA_TELA - 100
-MAX_ERROS = 5
+# Tela
 TELA = pygame.display.set_mode((LARGURA_TELA, ALTURA_TELA))
-pygame.display.set_caption(NOME_DO_JOGO)
+pygame.display.set_caption(NOME_JOGO)
 clock = pygame.time.Clock()
-FPS = 60
 
-FUNDO_CARREGADO = pygame.image.load("fundo_teste.jpeg")  # JPG, PNG, BMP, etc.
-FUNDO_CARREGADO = pygame.transform.scale(FUNDO_CARREGADO, (LARGURA_TELA, ALTURA_TELA))  # Redimensiona para caber na tela
+# Fundo
+FUNDO_CARREGADO = pygame.image.load(PATH_IMAGEM_FUNDO_PRINCIPAL)  # JPG, PNG, BMP, etc.
+FUNDO_CARREGADO = pygame.transform.scale(FUNDO_CARREGADO, (LARGURA_TELA, ALTURA_TELA))  
+# ^ Redimensiona para caber na tela
 
-# Cores
-MARROM = (176, 106, 0)
-PRETO = (0, 0, 0)
-BRANCO = (255, 255, 255)
-AZUL = (65, 132, 233)
-BEGE = (220,220,150)
-VERMELHO = (200, 50, 50)
-VERDE = (0, 200, 0)
-CINZA = (100, 100, 100)
-AMARELO = (255, 255, 0)
-
-# Fontes
-FONTE_PEQUENA = pygame.font.SysFont("Algerian", 20)
-FONTE = pygame.font.SysFont("Algerian", 24)
-FONTE_GRANDE = pygame.font.SysFont("Algerian", 36)
-
-# Colunas e teclas
-N_COLUNAS = 4
-LARGURA_COLUNA = LARGURA_TELA // N_COLUNAS
+# Teclas
 TECLAS = [pygame.K_q, pygame.K_w, pygame.K_e, pygame.K_r]
 
 # Sons
-pygame.mixer.init()
 notas_ativas = []
-NOTA_VOLUME = 0.5
+pygame.mixer.music.load(PATH_MUSICA_FUNDO)
+pygame.mixer.music.set_volume(MUSICA_FUNDO_VOLUME)
+for s in SONS:
+    s.set_volume(EFEITOS_SONOROS_VOLUME)
 
-# Gerar um "som ao toque" para os botões no menu
-sons = [
-    pygame.mixer.Sound('piano1.wav'),
-    pygame.mixer.Sound('piano2.wav'),
-    pygame.mixer.Sound('piano3.wav'),
-    pygame.mixer.Sound('piano4.wav')
-]
-
-# Música de fundo
-pygame.mixer.music.load('moonlight-sonata-classical-piano-beethoven.mp3')
-pygame.mixer.music.set_volume(0.05)
-for s in sons:
-    s.set_volume(0.05)
 
 ###################
 #  FIM INIT + CTE #
@@ -127,7 +98,6 @@ class Nota:
         self.coluna = notasjson[index][0]['coluna']
         self.raio = LARGURA_COLUNA/2
         self.x = self.coluna * LARGURA_COLUNA + LARGURA_COLUNA/2 + 1
-        self.y = - min(400,max(200*notasjson[index][0]['M_altura'],120))
         self.y = - self.raio*2
         self.largura = LARGURA_COLUNA
         self.altura = - self.y
@@ -172,13 +142,12 @@ def desenhar_texto(tela, texto, fonte, cor, centro):
 
 
 def desenhar_direcionais(TELA):
-    arial = pygame.font.SysFont("Arial", 20)
     pygame.draw.rect(TELA, MARROM, (10, int(ALTURA_TELA*0.95) - 30, 130, 45))
     desenhar_texto(TELA, "Direcionais:", FONTE_PEQUENA, PRETO, (LARGURA_TELA//10 + 30, int(ALTURA_TELA*0.95) - 20))
-    desenhar_texto(TELA, "<", arial, VERMELHO, (LARGURA_TELA//10, int(ALTURA_TELA*0.95)))
-    desenhar_texto(TELA, "^", arial, AMARELO, (LARGURA_TELA//10 + 20, int(ALTURA_TELA*0.95) + 5))
-    desenhar_texto(TELA, "v", arial, AZUL, (LARGURA_TELA//10 + 40, int(ALTURA_TELA*0.95)))
-    desenhar_texto(TELA, ">", arial, VERDE, (LARGURA_TELA//10 + 60, int(ALTURA_TELA*0.95))) 
+    desenhar_texto(TELA, "<", ARIAL20, VERMELHO, (LARGURA_TELA//10, int(ALTURA_TELA*0.95)))
+    desenhar_texto(TELA, "^", ARIAL20, AMARELO, (LARGURA_TELA//10 + 20, int(ALTURA_TELA*0.95) + 5))
+    desenhar_texto(TELA, "v", ARIAL20, AZUL, (LARGURA_TELA//10 + 40, int(ALTURA_TELA*0.95)))
+    desenhar_texto(TELA, ">", ARIAL20, VERDE, (LARGURA_TELA//10 + 60, int(ALTURA_TELA*0.95))) 
 
 
 # Espera por tecla específica
@@ -228,13 +197,10 @@ def menu_principal():
 
     while SAIR_DO_JOGO == False:
         
-
-
-         # Desenha o fundo
+        # Desenha o fundo personalizado para essa tela
         TELA.blit(FUNDO_CARREGADO, (0, 0))
 
-        # TELA.fill(BEGE)
-        desenhar_texto(TELA, NOME_DO_JOGO, FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3 - 10))
+        desenhar_texto(TELA, NOME_JOGO, FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3 - 10))
         desenhar_direcionais(TELA)
         
         for i, opcao in enumerate(opcoes):
@@ -248,13 +214,13 @@ def menu_principal():
                 SAIR_DO_JOGO = True
             if evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_UP:
-                    sons[0].play()
+                    SONS[0].play()
                     selecao = (selecao - 1) % N_opcoes
                 elif evento.key == pygame.K_DOWN:
-                    sons[2].play()
+                    SONS[2].play()
                     selecao = (selecao + 1) % N_opcoes
                 elif evento.key == pygame.K_RETURN:
-                    sons[3].play()
+                    SONS[3].play()
                     match selecao:
                         case 0:
                             pygame.mixer.music.pause()
@@ -310,7 +276,7 @@ def configuracoes():
     global NOTA_VOLUME
     global MAX_ERROS
     musica_volume = pygame.mixer.music.get_volume()
-    tecla_volume = sons[0].get_volume()
+    tecla_volume = SONS[0].get_volume()
     selecao = 0
 
     while True:
@@ -343,9 +309,9 @@ def configuracoes():
                             pygame.mixer.music.set_volume(musica_volume)
                         case 1:
                             tecla_volume = max(0.0, tecla_volume - 0.05)
-                            for s in sons:
+                            for s in SONS:
                                 s.set_volume(tecla_volume)
-                            # sons[0].play()
+                            # SONS[0].play()
                         case 2:
                             NOTA_VOLUME = max(0.0, NOTA_VOLUME - 0.05)
                         case 3:
@@ -357,9 +323,9 @@ def configuracoes():
                             pygame.mixer.music.set_volume(musica_volume)
                         case 1:
                             tecla_volume = max(0.0, tecla_volume + 0.05)
-                            for s in sons:
+                            for s in SONS:
                                 s.set_volume(tecla_volume)
-                            # sons[0].play()
+                            # SONS[0].play()
                         case 2:
                             NOTA_VOLUME = min(1.0, NOTA_VOLUME + 0.05)
                         case 3:
