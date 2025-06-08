@@ -5,7 +5,9 @@ NOME_JOGO =  "PoliTiles"
 LARGURA_TELA, ALTURA_TELA = 460, 600
 ALTURA_LINHA_ACERTO = ALTURA_TELA - 100
 MAX_ERROS = 5
-PATH_MUSICA_DEFAULT = "Happy_Birthday.mid"
+PATH_MUSICA = "Happy_Birthday.mid"
+PATH_DB = "DB.json"
+PATH_NOTAS_JSON = "notas.json"
 FPS = 60
 
 # Cores
