@@ -4,7 +4,7 @@ import json
 import sys
 import extract
 import db_functions
-from constants import PATH_MUSICA, PATH_IMAGEM_FUNDO_PRINCIPAL, PATH_MUSICA_FUNDO, PATH_NOTAS_JSON
+from constants import PATH_IMAGEM_FUNDO_PRINCIPAL, PATH_MUSICA_FUNDO, PATH_NOTAS_JSON
 from constants import NOME_JOGO, MAX_ERROS, FPS
 from constants import VERDE, AZUL, AMARELO, VERMELHO, PRETO, CINZA, BRANCO, MARROM, BEGE
 from constants import FONTE_MUITO_PEQUENA, FONTE_PEQUENA, FONTE, FONTE_GRANDE
@@ -17,11 +17,6 @@ from constants import NOTA_VOLUME, EFEITOS_SONOROS_VOLUME, MUSICA_FUNDO_VOLUME, 
 ############################
 # Init pygame e Constantes #
 ############################
-
-# Carrega as notas musicais
-extract.mid_to_json(PATH_MUSICA)
-with open(PATH_NOTAS_JSON, "r") as f:
-    notasjson = json.load(f)
 
 # Inicialização pygame
 pygame.init()
@@ -49,7 +44,7 @@ for s in SONS:
 # Teclas
 TECLAS = [pygame.K_q, pygame.K_w, pygame.K_e, pygame.K_r]
 
-# Identificador da musica
+# Identificador da musica selecionada
 Numero_musica = 0
 
 ###################
@@ -71,7 +66,6 @@ Numero_musica = 0
 #  FUNCOES E CLASSES   #
 ########################
 
-# Função que emite o som da nota 
 def tocar_nota(index : int):
     agora = pygame.time.get_ticks()
     for nota in notasjson[index]:
@@ -97,7 +91,6 @@ def atualizar_notas():
             notas_ativas.remove(nota)
 
 
-# Classe Nota
 class Nota:
     def __init__(self, index : int):
         self.index = index
@@ -135,7 +128,7 @@ class Nota:
 
 def mostrar_erro(TELA, coluna):
     for i in range(1000):
-        pygame.draw.rect(TELA, VERMELHO, (coluna*LARGURA_COLUNA, 0, LARGURA_COLUNA, 600))
+        pygame.draw.rect(TELA, VERMELHO, (coluna*LARGURA_COLUNA, 0, LARGURA_COLUNA, ALTURA_TELA))
 
 
 def desenhar_texto(TELA, texto, fonte, cor, centro):
@@ -153,7 +146,6 @@ def desenhar_direcionais(TELA):
     desenhar_texto(TELA, "VERDE: DIREITA", FONTE_MUITO_PEQUENA, VERDE, (LARGURA_TELA//10 + 27, int(ALTURA_TELA*0.83) + 80)) 
 
 
-# Espera por tecla específica
 def esperar_tecla(tecla):
     esperando = True
     while esperando:
@@ -553,7 +545,6 @@ def jogar():
 ###################
 
 
-# Início
 menu_principal()
 
 pygame.quit()
