@@ -1,12 +1,12 @@
 {
     "0": {
         "nome": "Happy Birthday",
-        "arquivo": "Happy_Birthday.mid",
+        "arquivo": "sons/Happy_Birthday.mid",
         "recorde": 0
     },
     "1": {
-        "nome": "M1",
-        "arquivo": "M1.mid",
+        "nome": "Brilha Brilha Estrelinha",
+        "arquivo": "sons/twinkle-twinkle-little-star.mid",
         "recorde": 0
     },
     "2": {
