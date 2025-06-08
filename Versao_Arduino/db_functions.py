@@ -1,17 +1,15 @@
 import json
 import os
-
-# Caminho do arquivo JSON
-DB_FILE = "DB.json"
+from constants import PATH_DB 
 
 # Verifica se o arquivo já existe; se não, cria com um dicionário vazio
-if not os.path.exists(DB_FILE):
-    with open(DB_FILE, 'w') as f:
+if not os.path.exists(PATH_DB):
+    with open(PATH_DB, 'w') as f:
         json.dump({}, f, indent=4)
 
 
 def adicionar_musica(nome, arquivo, recorde=0):
-    with open(DB_FILE, 'r') as f:
+    with open(PATH_DB, 'r') as f:
         dados = json.load(f)
 
     dados[len(dados)] = {
@@ -20,12 +18,12 @@ def adicionar_musica(nome, arquivo, recorde=0):
         "recorde": recorde
     }
 
-    with open(DB_FILE, 'w') as f:
+    with open(PATH_DB, 'w') as f:
         json.dump(dados, f, indent=4)
 
 
 def obter_nome_musica(numero):
-    with open(DB_FILE, 'r') as f:
+    with open(PATH_DB, 'r') as f:
         dados = json.load(f)
 
     chave = str(numero) 
@@ -35,7 +33,7 @@ def obter_nome_musica(numero):
 
 
 def obter_recorde_musica(numero : int):
-    with open(DB_FILE, 'r') as f:
+    with open(PATH_DB, 'r') as f:
         dados = json.load(f)
 
     chave = str(numero) 
@@ -45,7 +43,7 @@ def obter_recorde_musica(numero : int):
 
 
 def obter_arquivo_musica(numero : int):
-    with open(DB_FILE, 'r') as f:
+    with open(PATH_DB, 'r') as f:
         dados = json.load(f)
 
     chave = str(numero) 
@@ -55,7 +53,7 @@ def obter_arquivo_musica(numero : int):
 
 
 def obter_titulos():
-    with open(DB_FILE, 'r') as f:
+    with open(PATH_DB, 'r') as f:
         dados = json.load(f)
 
     titulos = []
@@ -66,18 +64,18 @@ def obter_titulos():
 
 
 def atualizar_recorde(musica, pontuacao):
-    with open(DB_FILE, 'r') as f:
+    with open(PATH_DB, 'r') as f:
         dados = json.load(f)
 
     chave = str(musica)
     if chave in dados:
         dados[chave]['recorde'] = pontuacao
-        with open(DB_FILE, 'w') as f:
+        with open(PATH_DB, 'w') as f:
             json.dump(dados, f, indent=4)
 
 
 def obter_lista_recordes():
-    with open(DB_FILE, 'r') as f:
+    with open(PATH_DB, 'r') as f:
         dados = json.load(f)
 
     recordes = []
@@ -87,11 +85,11 @@ def obter_lista_recordes():
     return recordes
 
 def resetar_recordes():
-    with open(DB_FILE, 'r') as f:
+    with open(PATH_DB, 'r') as f:
         dados = json.load(f)
 
     for musica in dados.values():
         musica["recorde"] = 0  # zera o recorde
 
-    with open(DB_FILE, 'w') as f:
+    with open(PATH_DB, 'w') as f:
         json.dump(dados, f, indent=4)
