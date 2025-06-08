@@ -11,12 +11,12 @@
     },
     "2": {
         "nome": "M2",
-        "arquivo": "M2.mid",
+        "arquivo": "sons/M2.mid",
         "recorde": 0
     },
     "3": {
         "nome": "M3",
-        "arquivo": "M3.mid",
+        "arquivo": "sons/M3.mid",
         "recorde": 0
     }
 }
