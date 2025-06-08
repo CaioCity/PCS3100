@@ -2,20 +2,20 @@
     "0": {
         "nome": "Happy Birthday",
         "arquivo": "Happy_Birthday.mid",
-        "recorde": 0
+        "recorde": 2774
     },
     "1": {
-        "nome": "EXEMPLO_M1",
-        "arquivo": "M1.mid",
-        "recorde": 0
+        "nome": "Brilha Brilha Estrelinha",
+        "arquivo": "twinkle-twinkle-little-star.mid",
+        "recorde": 3272
     },
     "2": {
-        "nome": "EXEMPLO_M2",
+        "nome": "M2",
         "arquivo": "M2.mid",
         "recorde": 0
     },
     "3": {
-        "nome": "EXEMPLO_M3",
+        "nome": "M3",
         "arquivo": "M3.mid",
         "recorde": 0
     }
