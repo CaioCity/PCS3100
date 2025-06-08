@@ -287,7 +287,7 @@ def configuracoes():
 
         for i, texto in enumerate(opcoes):
             cor = BRANCO if i == selecao else CINZA
-            desenhar_texto(TELA, texto, FONTE, cor, (LARGURA_TELA//2, 200 + i * 40))
+            desenhar_texto(TELA, texto, FONTE, cor, (LARGURA_TELA//2, ALTURA_TELA//3 + i * 40))
 
         pygame.display.flip()
 
@@ -351,6 +351,7 @@ def contagem_regressiva(TELA):
     desenhar_texto(TELA, "1", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
     pygame.display.flip()
     pygame.time.delay(1000)
+    return
 
 
 def tela_aguardo():
@@ -374,12 +375,36 @@ def tela_aguardo():
 
 
 def tela_pause():
-    TELA.fill(BEGE)
-    desenhar_texto(TELA, "Jogo pausado.", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3 + 40))
-    desenhar_texto(TELA, "Pressione ESPAÇO para retomar", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//2))
-    pygame.display.flip()
-    esperar_tecla(pygame.K_SPACE)
-    contagem_regressiva(TELA)
+
+    opcoes = ["Retomar Jogo", "Voltar para o Menu Principal"]
+    N_opcoes = len(opcoes)
+    selecao = 0
+
+    while(True):
+
+        TELA.fill(BEGE)
+        desenhar_texto(TELA, "Jogo pausado.", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3 + 40))
+
+        for i, texto in enumerate(opcoes):
+            cor = BRANCO if i == selecao else CINZA
+            desenhar_texto(TELA, texto, FONTE, cor, (LARGURA_TELA//2, ALTURA_TELA/2 + i * 40))
+
+        pygame.display.flip()
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_UP:
+                    selecao = (selecao - 1) % N_opcoes
+                elif evento.key == pygame.K_DOWN:
+                    selecao = (selecao + 1) % N_opcoes
+                elif evento.key == pygame.K_RETURN:
+                    if selecao == 0:
+                        return False 
+                    if selecao == 1:
+                        return True
 
 
 def tela_derrota():
@@ -416,7 +441,6 @@ def jogar():
     tela_aguardo()
 
     notas_index = 0
-    # tempo0 = pygame.time.get_ticks() # Para futuras implementações
     notas = []
     pontos = 0
     erros = 0
@@ -450,7 +474,10 @@ def jogar():
             elif evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_SPACE: # Jogo pausado
                     acumulador = pygame.time.get_ticks()
-                    tela_pause() # Sai da função quando o jogo é despausado 
+                    SAIR = tela_pause() # Retorna True se o jogador escolher voltar para o menu
+                    if SAIR:
+                        return
+                    contagem_regressiva(TELA)
                     tempo_pausado += pygame.time.get_ticks() - acumulador    
                 if evento.key in TECLAS:
                     idx = TECLAS.index(evento.key)
