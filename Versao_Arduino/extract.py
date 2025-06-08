@@ -53,24 +53,13 @@ def agrupar_notas(eventos : list):
     
     return reoganizar_colunas(eventos_agrupados)
 
-def regular_comprimento(eventos : list):
-    # O comprimento a ser regulado nao eh o comprimento de onda da nota
-    # Trata-se do comprimento da nota a ser gerada na interface gráfica do jogo
-    duracao_media = 0
-    for e in eventos:
-        duracao_media += e["duracao"]
-    duracao_media/=len(eventos)
-
-    for e in eventos:
-        e["M_altura"] = e["duracao"]/duracao_media
-
 def printar_eventos(eventos : list):
     # Utilizada para Debug e Analise
     for e in eventos: 
         print(f"Nota {e['nota']} | Início: {e['inicio']}s | Duração: {e['duracao']}s | Força: {e['intensidade']} | Coluna: {e['coluna']}")
     print(f"Número de notas: {len(eventos)}")
 
-def carregar_eventos_midi_sem_colunas_repetidas(caminho_midi, colunas=4):
+def carregar_eventos_midi(caminho_midi, colunas = 4):
     mid = mido.MidiFile(caminho_midi)
     ticks_por_beat = mid.ticks_per_beat
     tempo_bpm = 120
@@ -86,7 +75,6 @@ def carregar_eventos_midi_sem_colunas_repetidas(caminho_midi, colunas=4):
 
     segundos_por_tick = 60 / (tempo_bpm * ticks_por_beat)
     tempo_atual = 0
-    ultima_coluna = -1
 
     for track in mid.tracks:
         for msg in track:
@@ -99,12 +87,7 @@ def carregar_eventos_midi_sem_colunas_repetidas(caminho_midi, colunas=4):
                 if msg.note in tempos_notas_ativas:
                     inicio_s, velocity = tempos_notas_ativas.pop(msg.note)
                     duracao = tempo_s - inicio_s
-                    tentativa = (msg.note  + random.randint(0, colunas-1)) % colunas
-                    if tentativa == ultima_coluna:
-                        outras_colunas = [i for i in range(colunas) if i != ultima_coluna]
-                        tentativa = random.choice(outras_colunas)
-                    coluna = tentativa
-                    ultima_coluna = coluna
+                    coluna = (msg.note  + random.randint(0, colunas-1)) % colunas
 
                     eventos.append({
                         'nota': msg.note,
@@ -118,12 +101,10 @@ def carregar_eventos_midi_sem_colunas_repetidas(caminho_midi, colunas=4):
 
 def mid_to_json(file_name):
     # Usar o caminho do seu .mid aqui
-    eventos = carregar_eventos_midi_sem_colunas_repetidas(file_name)
+    eventos = carregar_eventos_midi(file_name)
 
     for e in eventos:
         e["intensidade"] = 127
-
-    regular_comprimento(eventos)
 
     agrupamentos = agrupar_notas(eventos)
 
