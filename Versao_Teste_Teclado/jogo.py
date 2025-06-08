@@ -413,17 +413,17 @@ def tela_vitoria(pontos : int):
 def jogar():
     global notasjson
 
+    tela_aguardo()
+
     notas_index = 0
     # tempo0 = pygame.time.get_ticks() # Para futuras implementações
     notas = []
     pontos = 0
     erros = 0
-    fim = 200
-    inicio_musica = None
-    inicio_jogo = pygame.time.get_ticks()
-    intervalo = 700
-
-    tela_aguardo()
+    inicio_musica = pygame.time.get_ticks()
+    tempo_pausado = 0
+    intervalo_inicial = 400
+    intervalo_final = 200
 
     while True:
         TELA.fill(BEGE)
@@ -442,12 +442,16 @@ def jogar():
         desenhar_texto(TELA, "Espaço", pygame.font.SysFont("Algerian", 14), BRANCO, (LARGURA_TELA-35, 55))
 
         for evento in pygame.event.get():
+            if agora - inicio_musica - tempo_pausado < intervalo_inicial:
+                break
             if evento.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             elif evento.type == pygame.KEYDOWN:
                 if evento.key == pygame.K_SPACE: # Jogo pausado
-                        tela_pause() # Sai da função quando o jogo é despausado     
+                    acumulador = pygame.time.get_ticks()
+                    tela_pause() # Sai da função quando o jogo é despausado 
+                    tempo_pausado += pygame.time.get_ticks() - acumulador    
                 if evento.key in TECLAS:
                     idx = TECLAS.index(evento.key)
                     colisao = False
@@ -464,7 +468,6 @@ def jogar():
                         if erros >= MAX_ERROS:
                             tela_derrota()
                             return        
-
         
         # Atualiza notas na tela
         for nota in notas[:]:
@@ -483,19 +486,19 @@ def jogar():
 
         # Gera nova nota        
         if notas_index == 0: 
-            if agora - inicio_jogo >= intervalo:
+            if agora - inicio_musica - tempo_pausado >= intervalo_inicial:
                 notas.append(Nota(notas_index))
-                inicio_musica = agora
+                inicio_musica = agora 
                 notas_index+=1
-        elif notas_index < len(notasjson) and agora - inicio_musica >= int(notasjson[notas_index][0]["inicio"]*1000):    
+        elif notas_index < len(notasjson) and agora - inicio_musica - tempo_pausado>= int(notasjson[notas_index][0]["inicio"]*1000):    
             notas.append(Nota(notas_index))
             notas_index+=1
         
 
         # Carrega a tela de vitória
         if notas_index >= len(notasjson):
-            fim -= 1
-            if fim == 0:
+            intervalo_final -= 1
+            if intervalo_final == 0:
                 tela_vitoria(pontos)
                 return
 
