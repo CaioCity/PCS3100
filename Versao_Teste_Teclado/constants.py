@@ -23,10 +23,10 @@ AMARELO = (255, 255, 0)
 
 # Fontes
 pygame.font.init()
+FONTE_MUITO_PEQUENA = pygame.font.SysFont("Algerian", 16)
 FONTE_PEQUENA = pygame.font.SysFont("Algerian", 20)
 FONTE = pygame.font.SysFont("Algerian", 24)
 FONTE_GRANDE = pygame.font.SysFont("Algerian", 36)
-ARIAL20 = pygame.font.SysFont("Arial", 20)
 
 # Imagens
 PATH_IMAGEM_FUNDO_PRINCIPAL = "fundo.jpeg"
