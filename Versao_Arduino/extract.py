@@ -31,26 +31,26 @@ def reoganizar_colunas(grupos : list):
     coluna_anterior = grupos[0][0]['coluna']
 
     for i in range(1,len(grupos)):
-        if grupos[i][0]['coluna'] == coluna_anterior:
-            grupos[i][0]['coluna'] = (coluna_anterior+2)%4
+        while grupos[i][0]['coluna'] == coluna_anterior:
+            grupos[i][0]['coluna'] = (coluna_anterior + random.randint(1,4))%4
         coluna_anterior = grupos[i][0]['coluna']
     
     return grupos
 
 def agrupar_notas(eventos : list):
     i_lista = 0
-    inicio = None
-    eventos_agrupados = []
+    inicio = eventos[0]['inicio']
+    eventos_agrupados = [[eventos[0]]]
 
-    for i in range(0,len(eventos)):
+    for i in range(1,len(eventos)):
         if eventos[i]['inicio'] == inicio:
             eventos_agrupados[i_lista].append(eventos[i])
         else: 
             eventos_agrupados.append([])
+            i_lista+=1
             eventos_agrupados[i_lista].append(eventos[i])
             inicio = eventos[i]['inicio']
-            i_lista+=1
-    
+
     return reoganizar_colunas(eventos_agrupados)
 
 def printar_eventos(eventos : list):
