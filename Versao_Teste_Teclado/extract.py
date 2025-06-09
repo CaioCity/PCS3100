@@ -1,6 +1,7 @@
 import mido
 import random
 import json
+from constants import PATH_NOTAS_JSON
 
 def dispersao(parametro : str, eventos : list):
     # Utilizada para Debug e Analise
@@ -108,5 +109,5 @@ def mid_to_json(file_name):
 
     agrupamentos = agrupar_notas(eventos)
 
-    with open("notas.json", "w", encoding="utf-8") as f:
+    with open(PATH_NOTAS_JSON, "w", encoding="utf-8") as f:
         json.dump(agrupamentos, f, indent=2)
