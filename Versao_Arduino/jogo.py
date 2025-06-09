@@ -46,14 +46,6 @@ pygame.mixer.music.set_volume(MUSICA_FUNDO_VOLUME)
 for s in SONS:
     s.set_volume(EFEITOS_SONOROS_VOLUME)
 
-# Botoes Arduino
-BOT_VERMELHO = "VERMELHO"
-BOT_AMARELO = "AMARELO"
-BOT_AZUL = "AZUL"
-BOT_VERDE = "VERDE"
-BOT_PRETO = "PRETO"
-BOTOES = [BOT_VERMELHO, BOT_AMARELO, BOT_AZUL, BOT_VERDE, BOT_PRETO]
-
 # Identificador da música selecionada
 Numero_musica = 0
 
