@@ -2,16 +2,16 @@ import json
 import os
 
 # Caminho do arquivo JSON
-DB_FILE = "DB.json"
+DB_PATH = "DB.json"
 
 # Verifica se o arquivo já existe; se não, cria com um dicionário vazio
-if not os.path.exists(DB_FILE):
-    with open(DB_FILE, 'w') as f:
+if not os.path.exists(DB_PATH):
+    with open(DB_PATH, 'w') as f:
         json.dump({}, f, indent=4)
 
 
-def adicionar_musica(nome, arquivo):
-    with open(DB_FILE, 'r') as f:
+def adicionar_musica(nome : str, arquivo : str):
+    with open(DB_PATH, 'r') as f:
         dados = json.load(f)
 
     dados[len(dados)] = {
@@ -20,12 +20,43 @@ def adicionar_musica(nome, arquivo):
         "recorde": 0
     }
 
-    with open(DB_FILE, 'w') as f:
+    with open(DB_PATH, 'w') as f:
         json.dump(dados, f, indent=4)
 
 
-def obter_nome_musica(numero):
-    with open(DB_FILE, 'r') as f:
+def remover_musica(indice_para_remover : int):
+    try:
+        # Carrega os dados do JSON
+        with open(DB_PATH, 'r', encoding='utf-8') as f:
+            dados = json.load(f)
+
+        # Converte para uma lista ordenada de entradas (valores), ignorando as chaves originais
+        lista_entradas = [dados[chave] for chave in sorted(dados, key=lambda x: int(x))]
+
+        # Verifica se o índice a ser removido é válido
+        if 0 <= indice_para_remover < len(lista_entradas):
+            removido = lista_entradas.pop(indice_para_remover)
+            print(f"Entrada removida: {removido}")
+        else:
+            print(f"Índice {indice_para_remover} fora do intervalo.")
+            return
+
+        # Recria o dicionário com os índices corrigidos
+        dados_reindexados = {str(i): entrada for i, entrada in enumerate(lista_entradas)}
+
+        # Salva novamente o arquivo
+        with open(DB_PATH, 'w', encoding='utf-8') as f:
+            json.dump(dados_reindexados, f, indent=4, ensure_ascii=False)
+    except FileNotFoundError:
+        print(f"Arquivo '{DB_PATH}' não encontrado.")
+    except json.JSONDecodeError:
+        print("Erro ao decodificar o JSON.")
+    except Exception as e:
+        print(f"Ocorreu um erro: {e}")
+
+
+def obter_nome_musica(numero : int):
+    with open(DB_PATH, 'r') as f:
         dados = json.load(f)
 
     chave = str(numero) 
@@ -35,7 +66,7 @@ def obter_nome_musica(numero):
 
 
 def obter_recorde_musica(numero : int):
-    with open(DB_FILE, 'r') as f:
+    with open(DB_PATH, 'r') as f:
         dados = json.load(f)
 
     chave = str(numero) 
@@ -45,7 +76,7 @@ def obter_recorde_musica(numero : int):
 
 
 def obter_arquivo_musica(numero : int):
-    with open(DB_FILE, 'r') as f:
+    with open(DB_PATH, 'r') as f:
         dados = json.load(f)
 
     chave = str(numero) 
@@ -55,7 +86,7 @@ def obter_arquivo_musica(numero : int):
 
 
 def obter_titulos():
-    with open(DB_FILE, 'r') as f:
+    with open(DB_PATH, 'r') as f:
         dados = json.load(f)
 
     titulos = []
@@ -65,19 +96,19 @@ def obter_titulos():
     return titulos
 
 
-def atualizar_recorde(musica, pontuacao):
-    with open(DB_FILE, 'r') as f:
+def atualizar_recorde(numero : int, pontuacao : int):
+    with open(DB_PATH, 'r') as f:
         dados = json.load(f)
 
-    chave = str(musica)
+    chave = str(numero)
     if chave in dados:
         dados[chave]['recorde'] = pontuacao
-        with open(DB_FILE, 'w') as f:
+        with open(DB_PATH, 'w') as f:
             json.dump(dados, f, indent=4)
 
 
 def obter_lista_recordes():
-    with open(DB_FILE, 'r') as f:
+    with open(DB_PATH, 'r') as f:
         dados = json.load(f)
 
     recordes = []
@@ -87,12 +118,11 @@ def obter_lista_recordes():
     return recordes
 
 def resetar_recordes():
-    with open(DB_FILE, 'r') as f:
+    with open(DB_PATH, 'r') as f:
         dados = json.load(f)
 
     for musica in dados.values():
         musica["recorde"] = 0  # zera o recorde
 
-    with open(DB_FILE, 'w') as f:
+    with open(DB_PATH, 'w') as f:
         json.dump(dados, f, indent=4)
-
