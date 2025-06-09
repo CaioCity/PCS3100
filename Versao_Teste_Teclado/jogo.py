@@ -472,7 +472,7 @@ def remover_musicas():
                         return
                     case pygame.K_ESCAPE:
                         return
-            
+
 
 def contagem_regressiva():
     for i in range(3,0,-1):
@@ -490,7 +490,7 @@ def tela_aguardo():
     PATH_MUSICA = db_functions.obter_arquivo_musica(Numero_musica)
 
     TELA.fill(BEGE)
-    desenhar_texto("PoliTiles", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
+    desenhar_texto(NOME_JOGO, FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
     desenhar_texto("Pressione ENTER para começar", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//2))
     pygame.display.flip()
     esperar_tecla(pygame.K_RETURN)
