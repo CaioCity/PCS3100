@@ -8,7 +8,7 @@ if not os.path.exists(PATH_DB):
         json.dump({}, f, indent=4)
 
 
-def adicionar_musica(nome, arquivo):
+def adicionar_musica(nome : str, arquivo : str):
     with open(PATH_DB, 'r') as f:
         dados = json.load(f)
 
@@ -22,7 +22,38 @@ def adicionar_musica(nome, arquivo):
         json.dump(dados, f, indent=4)
 
 
-def obter_nome_musica(numero):
+def remover_musica(indice_para_remover : int):
+    try:
+        # Carrega os dados do JSON
+        with open(PATH_DB, 'r', encoding='utf-8') as f:
+            dados = json.load(f)
+
+        # Converte para uma lista ordenada de entradas (valores), ignorando as chaves originais
+        lista_entradas = [dados[chave] for chave in sorted(dados, key=lambda x: int(x))]
+
+        # Verifica se o índice a ser removido é válido
+        if 0 <= indice_para_remover < len(lista_entradas):
+            removido = lista_entradas.pop(indice_para_remover)
+            print(f"Entrada removida: {removido}")
+        else:
+            print(f"Índice {indice_para_remover} fora do intervalo.")
+            return
+
+        # Recria o dicionário com os índices corrigidos
+        dados_reindexados = {str(i): entrada for i, entrada in enumerate(lista_entradas)}
+
+        # Salva novamente o arquivo
+        with open(PATH_DB, 'w', encoding='utf-8') as f:
+            json.dump(dados_reindexados, f, indent=4, ensure_ascii=False)
+    except FileNotFoundError:
+        print(f"Arquivo '{PATH_DB}' não encontrado.")
+    except json.JSONDecodeError:
+        print("Erro ao decodificar o JSON.")
+    except Exception as e:
+        print(f"Ocorreu um erro: {e}")
+
+
+def obter_nome_musica(numero : int):
     with open(PATH_DB, 'r') as f:
         dados = json.load(f)
 
@@ -63,11 +94,11 @@ def obter_titulos():
     return titulos
 
 
-def atualizar_recorde(musica, pontuacao):
+def atualizar_recorde(numero : int, pontuacao : int):
     with open(PATH_DB, 'r') as f:
         dados = json.load(f)
 
-    chave = str(musica)
+    chave = str(numero)
     if chave in dados:
         dados[chave]['recorde'] = pontuacao
         with open(PATH_DB, 'w') as f:
