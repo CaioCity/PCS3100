@@ -18,5 +18,10 @@
         "nome": "M3",
         "arquivo": "M3.mid",
         "recorde": 0
+    },
+    "4": {
+        "nome": "M4",
+        "arquivo": "M4.mid",
+        "recorde": 0
     }
 }
