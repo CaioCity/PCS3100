@@ -8,14 +8,14 @@ if not os.path.exists(PATH_DB):
         json.dump({}, f, indent=4)
 
 
-def adicionar_musica(nome, arquivo, recorde=0):
+def adicionar_musica(nome, arquivo):
     with open(PATH_DB, 'r') as f:
         dados = json.load(f)
 
     dados[len(dados)] = {
         "nome": nome,
         "arquivo": arquivo,
-        "recorde": recorde
+        "recorde": 0
     }
 
     with open(PATH_DB, 'w') as f:
