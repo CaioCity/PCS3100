@@ -80,7 +80,7 @@ def tocar_nota(index : int):
             "velocidade": velocidade,
             "desligar_em": agora + duracao_ms
         })
-
+    return
 
 # Função que gerencia as durações das notas
 def atualizar_notas():
@@ -449,18 +449,16 @@ def remover_musicas():
                 pygame.quit()
                 sys.exit()
             if evento.type == pygame.KEYDOWN:
-                if evento.key == pygame.K_LEFT and selecao == 0 and N_titulos != 0:
-                    index = (index - 1) % N_titulos
-                elif evento.key == pygame.K_RIGHT and selecao == 0 and N_titulos != 0:
-                    index = (index + 1) % N_titulos
-                elif evento.key == pygame.K_UP:
-                    selecao = (selecao - 1) % N_opcoes
-                elif evento.key == pygame.K_DOWN:
-                    selecao = (selecao + 1) % N_opcoes
-                elif evento.key == pygame.K_ESCAPE:
-                    return
-                elif evento.key == pygame.K_RETURN:
-                    if selecao == 1:
+                match evento.key:
+                    case pygame.K_LEFT if selecao == 0 and N_titulos != 0:
+                        index = (index - 1) % N_titulos
+                    case pygame.K_RIGHT if selecao == 0 and N_titulos != 0:
+                        index = (index + 1) % N_titulos
+                    case pygame.K_UP:
+                        selecao = (selecao - 1) % N_opcoes
+                    case pygame.K_DOWN:
+                        selecao = (selecao + 1) % N_opcoes
+                    case pygame.K_RETURN if selecao == 1:
                         db_functions.remover_musica(index)
                         desenhar_texto("Música Removida.", FONTE, VERMELHO, (LARGURA_TELA//2, 450))
                         titulos = db_functions.obter_titulos()
@@ -470,23 +468,18 @@ def remover_musicas():
                             index = (index - 1) % N_titulos
                         pygame.display.flip()
                         pygame.time.delay(400)
-                    if selecao == 2:
+                    case pygame.K_RETURN if selecao == 2:
                         return
-
+                    case pygame.K_ESCAPE:
+                        return
+            
 
 def contagem_regressiva():
-    TELA.fill(BEGE)
-    desenhar_texto("3", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
-    pygame.display.flip()
-    pygame.time.delay(1000)
-    TELA.fill(BEGE)
-    desenhar_texto("2", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
-    pygame.display.flip()
-    pygame.time.delay(1000)
-    TELA.fill(BEGE)
-    desenhar_texto("1", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
-    pygame.display.flip()
-    pygame.time.delay(1000)
+    for i in range(3,0,-1):
+        TELA.fill(BEGE)
+        desenhar_texto(str(i), FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
+        pygame.display.flip()
+        pygame.time.delay(1000)
     return
 
 
@@ -532,15 +525,16 @@ def tela_pause():
                 pygame.quit()
                 sys.exit()
             elif evento.type == pygame.KEYDOWN:
-                if evento.key == pygame.K_UP:
-                    selecao = (selecao - 1) % N_opcoes
-                elif evento.key == pygame.K_DOWN:
-                    selecao = (selecao + 1) % N_opcoes
-                elif evento.key == pygame.K_RETURN:
-                    if selecao == 0:
-                        return False 
-                    if selecao == 1:
-                        return True
+                match evento.key:
+                    case pygame.K_UP:
+                        selecao = (selecao - 1) % N_opcoes
+                    case pygame.K_DOWN:
+                        selecao = (selecao + 1) % N_opcoes
+                    case pygame.K_RETURN:
+                        if selecao == 0:
+                            return False 
+                        if selecao == 1:
+                            return True
 
 
 def tela_derrota():
