@@ -284,7 +284,7 @@ def menu_principal():
                         case 1:
                             Numero_musica = selecionar_musica(Numero_musica)
                         case 2:
-                            pass # Tutorial
+                            tutorial()
                         case 3:
                             pygame.mixer.music.pause()
                             configuracoes()
@@ -321,6 +321,29 @@ def selecionar_musica(index : int):
                     index = (index + 1) % N_opcoes
                 elif evento.botao == BOT_PRETO:
                     return index
+
+
+def tutorial():
+    TELA.fill(BEGE)
+    desenhar_texto("Tutorial", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA*2//20 - 10))
+    desenhar_texto("Bem-vindo ao PoliTiles", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*3//20))
+    desenhar_texto("Nesse jogo, seu objetivo é simples:", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*4//20))
+    desenhar_texto("Aperte os botões assim que os círculos", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*5//20))
+    desenhar_texto("estiverem sobre a linha vermelha para pontuar.", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*6//20))
+    desenhar_texto("Como jogar?", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*7//20 + 5))
+    desenhar_texto("1. Observe as 4 colunas (cada uma ligada a um botão)", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*8//20))
+    desenhar_texto("2. Aguarde: círculos coloridos vão cair do topo", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*9//20))
+    desenhar_texto("3. Quando uma nota estiver sobre a linha vermelha,", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*10//20))
+    desenhar_texto("Pressione o botão correspondente", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*11//20))
+    desenhar_texto("Fim de Jogo:", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*12//20 + 5))
+    desenhar_texto("Derrota: O jogo acaba se você perder todas as vidas", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*13//20))
+    desenhar_texto("Vitória: O jogo acaba se a música chegar ao fim", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*14//20))
+    desenhar_texto("OBS: Acertar nota: + Precisão --> + pontos", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*15//20))
+    desenhar_texto("OBS: Errar ou deixar a nota passar = -1 vida.", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*16//20))
+    desenhar_texto("Pressione o botão preto para sair", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*18//20))
+    pygame.display.flip()
+    esperar_tecla(pygame.K_RETURN)
+    return
 
 
 def configuracoes():
