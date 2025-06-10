@@ -17,8 +17,6 @@ from constants import BOT_VERMELHO, BOT_AMARELO, BOT_AZUL, BOT_VERDE, BOT_PRETO,
 
 
 
-
-
 ############################
 # Init pygame e Constantes #
 ############################
@@ -286,7 +284,7 @@ def selecionar_musica(index : int):
     while True:
         TELA.fill(BEGE)
         desenhar_texto("Músicas", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
-        desenhar_texto("Pressione o botão preto para sair", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, 4*ALTURA_TELA//5))
+        desenhar_texto("Pressione o botão preto para sair", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, 2*ALTURA_TELA//3))
 
         desenhar_direcionais()
 
@@ -459,44 +457,42 @@ def adicionar_musicas():
                             return
                         elif selecao == 3:
                             return
-            # elif evento.type == USEREVENT_BOTAO:
-            #     if editando:
-            #         if evento.botao == BOT_PRETO:
-            #             if campo_ativo == "nome":
-            #                 nome = texto_temp
-            #             elif campo_ativo == "path":
-            #                 path = texto_temp
-            #             texto_temp = ""
-            #             editando = False
-            #             campo_ativo = ""
-            #     else:
-            #         if evento.botao == BOT_AMARELO:
-            #             selecao = (selecao - 1) % N_opcoes
-            #         elif evento.botao == BOT_AZUL:
-            #             selecao = (selecao + 1) % N_opcoes
-            #         elif evento.botao == BOT_PRETO:
-            #             if selecao == 0:
-            #                 editando = True
-            #                 campo_ativo = "nome"
-            #                 texto_temp = nome
-            #             elif selecao == 1:
-            #                 editando = True
-            #                 campo_ativo = "path"
-            #                 texto_temp = path
-            #             elif selecao == 2:
-            #                 # print(f"Nome: {nome}, Arquivo: {path}")
-            #                 db_functions.adicionar_musica(nome, path)
-            #                 return
-            #             elif selecao == 3:
-            #                 return        
+            elif evento.type == USEREVENT_BOTAO:
+                if editando:
+                    if evento.botao == BOT_PRETO:
+                        if campo_ativo == "nome":
+                            nome = texto_temp
+                        elif campo_ativo == "path":
+                            path = texto_temp
+                        texto_temp = ""
+                        editando = False
+                        campo_ativo = ""
+                else:
+                    if evento.botao == BOT_AMARELO:
+                        selecao = (selecao - 1) % N_opcoes
+                    elif evento.botao == BOT_AZUL:
+                        selecao = (selecao + 1) % N_opcoes
+                    elif evento.botao == BOT_PRETO:
+                        if selecao == 0:
+                            editando = True
+                            campo_ativo = "nome"
+                            texto_temp = nome
+                        elif selecao == 1:
+                            editando = True
+                            campo_ativo = "path"
+                            texto_temp = path
+                        elif selecao == 2:
+                            # print(f"Nome: {nome}, Arquivo: {path}")
+                            nome.strip()
+                            path.strip()
+                            if nome != "" and path != "":
+                                db_functions.adicionar_musica(nome, path)
+                            return
+                        elif selecao == 3:
+                            return        
 
 
 def remover_musicas():
-    # global BOT_PRETO
-    # global BOT_VERMELHO
-    # global BOT_AMARELO
-    # global BOT_AZUL
-    # global BOT_VERDE
     titulos = db_functions.obter_titulos()
     N_titulos = len(titulos)
     N_opcoes = 3
@@ -548,30 +544,28 @@ def remover_musicas():
                         return
                     case pygame.K_ESCAPE:
                         return
-            # if evento.type == USEREVENT_BOTAO:
-            #     match evento.botao:
-            #         case BOT_VERMELHO if selecao == 0 and N_titulos != 0:
-            #             index = (index - 1) % N_titulos
-            #         case BOT_VERDE if selecao == 0 and N_titulos != 0:
-            #             index = (index + 1) % N_titulos
-            #         case BOT_AMARELO:
-            #             selecao = (selecao - 1) % N_opcoes
-            #         case BOT_AZUL:
-            #             selecao = (selecao + 1) % N_opcoes
-            #         case BOT_PRETO if selecao == 1:
-            #             db_functions.remover_musica(index)
-            #             desenhar_texto("Música Removida.", FONTE, VERMELHO, (LARGURA_TELA//2, 450))
-            #             titulos = db_functions.obter_titulos()
-            #             N_titulos = len(titulos)
-            #             selecao = 0
-            #             if N_titulos != 0:
-            #                 index = (index - 1) % N_titulos
-            #             pygame.display.flip()
-            #             pygame.time.delay(400)
-            #         case BOT_PRETO if selecao == 2:
-            #             return
-            #         case pygame.K_ESCAPE:
-            #             return
+            if evento.type == USEREVENT_BOTAO:
+                if evento.botao == BOT_VERMELHO and selecao == 0 and N_titulos != 0:
+                    index = (index - 1) % N_titulos
+                if evento.botao == BOT_VERDE and selecao == 0 and N_titulos != 0:
+                    index = (index + 1) % N_titulos
+                if evento.botao == BOT_AMARELO:
+                    selecao = (selecao - 1) % N_opcoes
+                if evento.botao == BOT_AZUL:
+                    selecao = (selecao + 1) % N_opcoes
+                if evento.botao == BOT_PRETO:
+                    if selecao == 1:
+                        db_functions.remover_musica(index)
+                        desenhar_texto("Música Removida.", FONTE, VERMELHO, (LARGURA_TELA//2, 450))
+                        titulos = db_functions.obter_titulos()
+                        N_titulos = len(titulos)
+                        selecao = 0
+                        if N_titulos != 0:
+                            index = (index - 1) % N_titulos
+                        pygame.display.flip()
+                        pygame.time.delay(400)
+                    if selecao == 2:
+                        return
 
 
 def contagem_regressiva():
@@ -626,16 +620,6 @@ def tela_pause():
                 pygame.quit()
                 sys.exit()
             elif evento.type == USEREVENT_BOTAO:
-                # match evento.botao:
-                #     case BOT_AMARELO:
-                #         selecao = (selecao - 1) % N_opcoes
-                #     case BOT_AZUL:
-                #         selecao = (selecao + 1) % N_opcoes
-                #     case BOT_PRETO:
-                #         if selecao == 0:
-                #             return False
-                #         if selecao == 1:
-                #             return True
                 if evento.botao == BOT_AMARELO:
                     selecao = (selecao - 1) % N_opcoes
                 elif evento.botao == BOT_AZUL:
