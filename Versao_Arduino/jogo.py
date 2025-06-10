@@ -7,7 +7,7 @@ import sys
 import extract
 import db_functions
 from constants import PATH_IMAGEM_FUNDO_PRINCIPAL, PATH_MUSICA_FUNDO, PATH_NOTAS_JSON
-from constants import NOME_JOGO, MAX_ERROS, FPS
+from constants import NOME_JOGO, MAX_ERROS, FPS, STATUS_LEDS
 from constants import VERDE, AZUL, AMARELO, VERMELHO, PRETO, CINZA, BRANCO, MARROM, BEGE
 from constants import FONTE_MUITO_PEQUENA, FONTE_PEQUENA, FONTE, FONTE_GRANDE
 from constants import ALTURA_TELA, LARGURA_TELA, ALTURA_LINHA_ACERTO, LARGURA_COLUNA, N_COLUNAS
@@ -71,6 +71,9 @@ Numero_musica = 0
 
 # Conectar à porta COM
 arduino = serial.Serial('COM3', 9600)
+
+pygame.time.delay(750) # esperar arduino iniciar
+
 LER = True  
 USEREVENT_BOTAO = pygame.USEREVENT + 1
 
@@ -342,7 +345,7 @@ def tutorial():
     desenhar_texto("OBS: Errar ou deixar a nota passar = -1 vida.", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*16//20))
     desenhar_texto("Pressione o botão preto para sair", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*18//20))
     pygame.display.flip()
-    esperar_tecla(pygame.K_RETURN)
+    esperar_tecla(BOT_PRETO)
     return
 
 
@@ -350,21 +353,23 @@ def configuracoes():
     global NOTA_VOLUME
     global MUSICA_FUNDO_VOLUME
     global EFEITOS_SONOROS_VOLUME
+    global STATUS_LEDS
     global MAX_ERROS
+    global arduino
 
     selecao = 0
 
     while True:
         TELA.fill(BEGE)
-        desenhar_texto("Configurações", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, 80))
+        desenhar_texto("Configurações", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, 60))
         desenhar_direcionais()
 
-        opcoes = [f"Música de fundo: {int(MUSICA_FUNDO_VOLUME*100)}%", f"Efeitos sonoros de menu: {int(EFEITOS_SONOROS_VOLUME*100)}%", f"Volume das notas: {int(NOTA_VOLUME*100)}%", f"Erros permitidos: {MAX_ERROS}", "Limpar Recordes", "Adicionar Músicas", "Remover Músicas", "Voltar"]
+        opcoes = [f"Música de fundo: {int(MUSICA_FUNDO_VOLUME*100)}%", f"Efeitos sonoros de menu: {int(EFEITOS_SONOROS_VOLUME*100)}%", f"Volume das notas: {int(NOTA_VOLUME*100)}%", f"LEDS: {"Ligados" if STATUS_LEDS else "Desligados"}", f"Erros permitidos: {MAX_ERROS}", "Limpar Recordes", "Adicionar Músicas", "Remover Músicas", "Voltar"]
         N_opcoes = len(opcoes)
         
         for i, texto in enumerate(opcoes):
             cor = BRANCO if i == selecao else CINZA
-            desenhar_texto(texto, FONTE, cor, (LARGURA_TELA//2, ALTURA_TELA//4 + i * 40))
+            desenhar_texto(texto, FONTE, cor, (LARGURA_TELA//2, ALTURA_TELA//5 + i * 38))
 
         pygame.display.flip()
 
@@ -389,6 +394,12 @@ def configuracoes():
                         case 2:
                             NOTA_VOLUME = max(0.0, NOTA_VOLUME - 0.05)
                         case 3:
+                            STATUS_LEDS = not STATUS_LEDS
+                            if STATUS_LEDS == True:
+                                arduino.write("ON\n".encode())
+                            if STATUS_LEDS == False:
+                                arduino.write("OFF\n".encode())
+                        case 4:
                             MAX_ERROS = max(MAX_ERROS - 1, 1)
                 elif evento.botao == BOT_VERDE:
                     match selecao:
@@ -402,9 +413,15 @@ def configuracoes():
                         case 2:
                             NOTA_VOLUME = min(1.0, NOTA_VOLUME + 0.05)
                         case 3:
+                            STATUS_LEDS = not STATUS_LEDS
+                            if STATUS_LEDS == True:
+                                arduino.write("ON\n".encode())
+                            if STATUS_LEDS == False:
+                                arduino.write("OFF\n".encode())
+                        case 4:
                             MAX_ERROS+=1
                 elif evento.botao == BOT_PRETO:
-                    if selecao == 4:
+                    if selecao == 5:
                         operacao_sucedida = db_functions.resetar_recordes()
                         if operacao_sucedida == True:
                             desenhar_texto("Recordes limpos", FONTE, VERMELHO, (LARGURA_TELA//2, 460))
@@ -412,7 +429,7 @@ def configuracoes():
                             desenhar_texto("A operação falhou!", FONTE, VERMELHO, (LARGURA_TELA//2, 460))                            
                         pygame.display.flip()
                         pygame.time.delay(400)
-                    elif selecao == 5:
+                    elif selecao == 6:
                         operacao_sucedida = adicionar_musicas()
                         if operacao_sucedida == True:
                             desenhar_texto("Operação bem sucedida", FONTE, VERMELHO, (LARGURA_TELA//2, 400))
@@ -420,13 +437,13 @@ def configuracoes():
                             desenhar_texto("A operação falhou!", FONTE, VERMELHO, (LARGURA_TELA//2, 400))
                         pygame.display.flip()
                         pygame.time.delay(400)
-                    elif selecao == 6:
+                    elif selecao == 7:
                         operacao_sucedida = remover_musicas()
                         if operacao_sucedida == True:
                             desenhar_texto("Operação bem sucedida", FONTE, VERMELHO, (LARGURA_TELA//2, 460))
                             pygame.display.flip()
                             pygame.time.delay(400)
-                    elif selecao == 7:
+                    elif selecao == 8:
                         return
 
 
