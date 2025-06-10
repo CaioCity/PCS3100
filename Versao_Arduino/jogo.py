@@ -302,6 +302,15 @@ def selecionar_musica(index : int):
     N_opcoes = len(opcoes)
     recordes = db_functions.obter_lista_recordes()
 
+    if N_opcoes == 0:
+        TELA.fill(BEGE)
+        desenhar_texto("Sem Músicas", FONTE_GRANDE, VERMELHO, (LARGURA_TELA//2, ALTURA_TELA//3))
+        desenhar_texto("Adicione músicas nas configurações", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*1//2))
+        desenhar_texto("Pressione o botão preto para sair", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*2//3))
+        pygame.display.flip()
+        esperar_tecla(BOT_PRETO)
+        return
+
     while True:
         TELA.fill(BEGE)
         desenhar_texto("Músicas", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA//3))
