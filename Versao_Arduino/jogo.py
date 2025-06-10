@@ -200,6 +200,24 @@ def esperar_tecla(botao):
                 esperando = False
 
 
+def abrir_arquivo(file):
+    if not file.endswith(".json"):
+        raise ValueError(f"Extensão inválida: '{file}' não é um arquivo JSON.")
+    
+    try:
+        with open(file, 'r', encoding='utf-8') as f:
+            return json.load(f) 
+
+    except FileNotFoundError:
+        print("Erro: Arquivo JSON não encontrado.")
+    except PermissionError:
+        print("Erro: Sem permissão para abrir o arquivo JSON.")
+    except json.JSONDecodeError:
+        print("Erro: Conteúdo do arquivo JSON está malformado.")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
+
+
 #####################
 #    FIM FUNCOES    #
 #####################
@@ -333,7 +351,7 @@ def configuracoes():
                 sys.exit()
             elif evento.type == USEREVENT_BOTAO:
                 if evento.botao == BOT_AMARELO:
-                    selecao = (selecao - 1) % N_opcoes
+                    selecao = (selecao - 1) % N_opcoes      
                 elif evento.botao == BOT_AZUL:
                     selecao = (selecao + 1) % N_opcoes
                 elif evento.botao == BOT_VERMELHO:
@@ -364,14 +382,27 @@ def configuracoes():
                             MAX_ERROS+=1
                 elif evento.botao == BOT_PRETO:
                     if selecao == 4:
-                        db_functions.resetar_recordes()
-                        desenhar_texto("Recordes limpos.", FONTE, VERMELHO, (LARGURA_TELA//2, 460))
+                        operacao_sucedida = db_functions.resetar_recordes()
+                        if operacao_sucedida == True:
+                            desenhar_texto("Recordes limpos", FONTE, VERMELHO, (LARGURA_TELA//2, 460))
+                        if operacao_sucedida == False:
+                            desenhar_texto("A operação falhou!", FONTE, VERMELHO, (LARGURA_TELA//2, 460))                            
                         pygame.display.flip()
                         pygame.time.delay(400)
                     elif selecao == 5:
-                        adicionar_musicas()
+                        operacao_sucedida = adicionar_musicas()
+                        if operacao_sucedida == True:
+                            desenhar_texto("Operação bem sucedida", FONTE, VERMELHO, (LARGURA_TELA//2, 400))
+                        if operacao_sucedida == False:
+                            desenhar_texto("A operação falhou!", FONTE, VERMELHO, (LARGURA_TELA//2, 400))
+                        pygame.display.flip()
+                        pygame.time.delay(400)
                     elif selecao == 6:
-                        remover_musicas()
+                        operacao_sucedida = remover_musicas()
+                        if operacao_sucedida == True:
+                            desenhar_texto("Operação bem sucedida", FONTE, VERMELHO, (LARGURA_TELA//2, 460))
+                            pygame.display.flip()
+                            pygame.time.delay(400)
                     elif selecao == 7:
                         return
 
@@ -398,15 +429,15 @@ def adicionar_musicas():
         desenhar_texto(nome if selecao != 0 or not editando else texto_temp + "|", FONTE_MUITO_PEQUENA, PRETO, (LARGURA_TELA//2, ALTURA_TELA//5 + 40))
 
         cor = BRANCO if selecao == 1 else CINZA
-        desenhar_texto("Insira o nome do arquivo (Ex: Nome.mid)", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*2//5))
-        pygame.draw.rect(TELA, cor, (LARGURA_TELA//6, ALTURA_TELA*2//5 + 20, LARGURA_TELA*2//3, 40))
-        desenhar_texto(path if selecao != 1 or not editando else texto_temp + "|", FONTE_MUITO_PEQUENA, PRETO, (LARGURA_TELA//2, ALTURA_TELA*2//5 + 40))
+        desenhar_texto("Insira o nome do arquivo (Ex: Nome.mid)", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*2//5 - 20))
+        pygame.draw.rect(TELA, cor, (LARGURA_TELA//6, ALTURA_TELA*2//5, LARGURA_TELA*2//3, 40))
+        desenhar_texto(path if selecao != 1 or not editando else texto_temp + "|", FONTE_MUITO_PEQUENA, PRETO, (LARGURA_TELA//2, ALTURA_TELA*2//5 + 20))
 
         cor = BRANCO if selecao == 2 else CINZA
-        desenhar_texto("Salvar", FONTE_PEQUENA, cor, (LARGURA_TELA//2, ALTURA_TELA*3//5 - 10))
+        desenhar_texto("Salvar", FONTE_PEQUENA, cor, (LARGURA_TELA//2, ALTURA_TELA*3//5 - 45))
 
         cor = BRANCO if selecao == 3 else CINZA
-        desenhar_texto("Sair", FONTE_PEQUENA, cor, (LARGURA_TELA//2, ALTURA_TELA*2//3 - 5))
+        desenhar_texto("Sair", FONTE_PEQUENA, cor, (LARGURA_TELA//2, ALTURA_TELA*3//5 - 5))
 
         desenhar_texto("Atenção!", FONTE_PEQUENA, VERMELHO, (LARGURA_TELA//2, ALTURA_TELA*7//10 + 20))
         desenhar_texto("Desligue o Caps Lock.", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*7//10 + 20 + 25))
@@ -453,10 +484,14 @@ def adicionar_musicas():
                             texto_temp = path
                         elif selecao == 2:
                             # print(f"Nome: {nome}, Arquivo: {path}")
-                            db_functions.adicionar_musica(nome, path)
-                            return
+                            nome.strip()
+                            path.strip()
+                            if nome != "" and path != "":
+                                db_functions.adicionar_musica(nome, path)
+                                return True
+                            return False
                         elif selecao == 3:
-                            return
+                            return False
             elif evento.type == USEREVENT_BOTAO:
                 if editando:
                     if evento.botao == BOT_PRETO:
@@ -487,9 +522,10 @@ def adicionar_musicas():
                             path.strip()
                             if nome != "" and path != "":
                                 db_functions.adicionar_musica(nome, path)
-                            return
+                                return True
+                            return False
                         elif selecao == 3:
-                            return        
+                            return False  
 
 
 def remover_musicas():
@@ -498,6 +534,8 @@ def remover_musicas():
     N_opcoes = 3
     selecao = 0
     index = 0
+    retorno = False
+
     while True:
 
         TELA.fill(BEGE)
@@ -540,10 +578,11 @@ def remover_musicas():
                             index = (index - 1) % N_titulos
                         pygame.display.flip()
                         pygame.time.delay(400)
+                        retorno = True
                     case pygame.K_RETURN if selecao == 2:
-                        return
+                        return retorno
                     case pygame.K_ESCAPE:
-                        return
+                        return retorno
             if evento.type == USEREVENT_BOTAO:
                 if evento.botao == BOT_VERMELHO and selecao == 0 and N_titulos != 0:
                     index = (index - 1) % N_titulos
@@ -564,8 +603,9 @@ def remover_musicas():
                             index = (index - 1) % N_titulos
                         pygame.display.flip()
                         pygame.time.delay(400)
+                        retorno = True
                     if selecao == 2:
-                        return
+                        return retorno
 
 
 def contagem_regressiva():
@@ -577,7 +617,7 @@ def contagem_regressiva():
     return
 
 
-def tela_aguardo():
+def tela_preparacao():
     global notasjson
     global Numero_musica
 
@@ -589,13 +629,30 @@ def tela_aguardo():
     desenhar_texto("Pressione o botão preto", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//2 + 40))
     pygame.display.flip()
     esperar_tecla(BOT_PRETO)
+    extracao_sucedida = extract.mid_to_json(PATH_MUSICA)
+    if extracao_sucedida == False:
+        tela_erro()
+        return False
+    if extracao_sucedida == True:
+        notasjson = abrir_arquivo(PATH_NOTAS_JSON)
+        if notasjson == None:
+            tela_erro()
+            return False
+        contagem_regressiva()
+        return True
 
-    extract.mid_to_json(PATH_MUSICA)
-    with open(PATH_NOTAS_JSON, "r") as f:
-        notasjson = json.load(f)
 
-    contagem_regressiva()
-    return
+def tela_erro():
+    TELA.fill(BEGE)
+    desenhar_texto("ERRO", FONTE_GRANDE, VERMELHO, (LARGURA_TELA//2, ALTURA_TELA//4))
+    desenhar_texto("Não foi possível carregar a música", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//4 + 60))
+    desenhar_texto("Sugestões:", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//4 + 110))
+    desenhar_texto("1) Escolha outra música", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//4 + 140))
+    desenhar_texto("2) Revise os arquivos de origem", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//4 + 170))
+    desenhar_texto("Para voltar ao menu", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//4 + 220))
+    desenhar_texto("Pressione o botão preto", FONTE, CINZA, (LARGURA_TELA//2, ALTURA_TELA//4 + 250))
+    pygame.display.flip()
+    esperar_tecla(BOT_PRETO)
 
 
 def tela_pause():
@@ -662,7 +719,9 @@ def tela_vitoria(pontos : int):
 def jogar():
     global notasjson
 
-    tela_aguardo()
+    preparativos_finalizados = tela_preparacao()
+    if preparativos_finalizados == False:
+        return
 
     notas_index = 0
     notas = []
@@ -687,8 +746,8 @@ def jogar():
         # Botão de pausa
         pygame.draw.rect(TELA, CINZA, (LARGURA_TELA-60, 13, 50, 30))
         desenhar_texto("||", FONTE, BRANCO, (LARGURA_TELA-35, 25))
-        desenhar_texto("BOTÃO", pygame.font.SysFont("Algerian", 14), BRANCO, (LARGURA_TELA-35, 55))
-        desenhar_texto("PRETO", pygame.font.SysFont("Algerian", 14), BRANCO, (LARGURA_TELA-35, 70))
+        desenhar_texto("BOTÃO", FONTE_MUITO_PEQUENA, BRANCO, (LARGURA_TELA-35, 55))
+        desenhar_texto("PRETO", FONTE_MUITO_PEQUENA, BRANCO, (LARGURA_TELA-35, 70))
 
         for evento in pygame.event.get():
             if agora - inicio_musica - tempo_pausado < intervalo_inicial:
