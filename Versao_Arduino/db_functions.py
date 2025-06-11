@@ -31,7 +31,6 @@ def abrir_DB():
     if not PATH_DB.endswith(".json"):
         print(f"Extensão inválida: '{PATH_DB}' não é um arquivo JSON.")
         return None
-    
     try:
         with open(PATH_DB, 'r', encoding='utf-8') as f:
             return json.load(f) 
@@ -82,8 +81,6 @@ def remover_musica(indice_para_remover : int):
     dados_reindexados = {str(i): entrada for i, entrada in enumerate(lista_entradas)}
 
     alterar_DB(dados_reindexados)
-    # with open(PATH_DB, 'w', encoding='utf-8') as f:
-    #     json.dump(dados_reindexados, f, indent=4, ensure_ascii=False)
 
 
 def obter_nome_musica(numero : int):
