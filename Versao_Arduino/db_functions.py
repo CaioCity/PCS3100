@@ -10,7 +10,8 @@ if not os.path.exists(PATH_DB):
 
 def alterar_DB(dados):
     if not PATH_DB.endswith(".json"):
-        raise ValueError(f"Extensão inválida: '{PATH_DB}' não é um arquivo JSON.")
+        print(f"Extensão inválida: '{PATH_DB}' não é um arquivo JSON.")
+        return None
     
     try:
         with open(PATH_DB, 'w', encoding='utf-8') as f:
@@ -28,7 +29,8 @@ def alterar_DB(dados):
 
 def abrir_DB():
     if not PATH_DB.endswith(".json"):
-        raise ValueError(f"Extensão inválida: '{PATH_DB}' não é um arquivo JSON.")
+        print(f"Extensão inválida: '{PATH_DB}' não é um arquivo JSON.")
+        return None
     
     try:
         with open(PATH_DB, 'r', encoding='utf-8') as f:
@@ -52,7 +54,7 @@ def adicionar_musica(nome : str, arquivo : str):
 
     dados[len(dados)] = {
         "nome": nome,
-        "arquivo": "sons/" + arquivo,
+        "arquivo": "Musicas/" + arquivo,
         "recorde": 0
     }
 
