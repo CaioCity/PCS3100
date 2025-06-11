@@ -373,7 +373,7 @@ def configuracoes():
         desenhar_texto("Configurações", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, 60))
         desenhar_direcionais()
 
-        opcoes = [f"Música de fundo: {int(MUSICA_FUNDO_VOLUME*100)}%", f"Efeitos sonoros de menu: {int(EFEITOS_SONOROS_VOLUME*100)}%", f"Volume das notas: {int(NOTA_VOLUME*100)}%", f"LEDS: {"Ligados" if STATUS_LEDS else "Desligados"}", f"Erros permitidos: {MAX_ERROS}", "Limpar Recordes", "Adicionar Músicas", "Remover Músicas", "Voltar"]
+        opcoes = [f"Música de fundo: {int(MUSICA_FUNDO_VOLUME*100)}%", f"Efeitos sonoros de menu: {int(EFEITOS_SONOROS_VOLUME*100)}%", f"Volume das notas: {int(NOTA_VOLUME*100)}%", f"LEDS: {'Ligados' if STATUS_LEDS else 'Desligados'}", f"Erros permitidos: {MAX_ERROS}", "Limpar Recordes", "Adicionar Músicas", "Remover Músicas", "Voltar"]
         N_opcoes = len(opcoes)
         
         for i, texto in enumerate(opcoes):
