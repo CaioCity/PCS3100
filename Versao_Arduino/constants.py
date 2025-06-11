@@ -4,6 +4,7 @@ import pygame
 NOME_JOGO =  "PoliTiles"
 LARGURA_TELA, ALTURA_TELA = 460, 600
 ALTURA_LINHA_ACERTO = ALTURA_TELA - 100
+STATUS_LEDS = True
 MAX_ERROS = 5
 PATH_DB = "DB.json"
 PATH_NOTAS_JSON = "notas.json"
@@ -37,8 +38,8 @@ TECLAS = [pygame.K_q, pygame.K_w, pygame.K_e, pygame.K_r]
 
 # Sons
 NOTA_VOLUME = 0.5
-EFEITOS_SONOROS_VOLUME = 0.10
-MUSICA_FUNDO_VOLUME = 0.10
+EFEITOS_SONOROS_VOLUME = 0.25
+MUSICA_FUNDO_VOLUME = 0.25
 pygame.mixer.init()
 SONS = [
     pygame.mixer.Sound('sons/piano1.wav'),

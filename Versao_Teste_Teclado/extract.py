@@ -1,6 +1,43 @@
 import mido
 import random
 import json
+from constants import PATH_NOTAS_JSON
+
+def abrir_arquivo_midi(nome_arquivo):
+    if not nome_arquivo.endswith((".mid", ".midi")):
+        raise ValueError(f"Extensão inválida: '{nome_arquivo}' não é um arquivo MIDI.")
+    
+    try:
+        mid = mido.MidiFile(nome_arquivo)
+        return mid
+
+    except FileNotFoundError:
+        print("Erro: Arquivo MIDI não encontrado.")
+    except PermissionError:
+        print("Erro: Sem permissão para abrir o arquivo MIDI.")
+    except (OSError, EOFError):
+        print("Erro: Arquivo corrompido ou não é um MIDI válido.")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
+
+
+def alterar_arquivo_json(nome_arquivo, dados):
+    if not nome_arquivo.endswith(".json"):
+        raise ValueError(f"Extensão inválida: '{nome_arquivo}' não é um arquivo JSON.")
+    
+    try:
+        with open(nome_arquivo, 'w', encoding='utf-8') as f:
+            json.dump(dados, f, indent=2)
+            print(f"Arquivo '{nome_arquivo}' salvo com sucesso.")
+            return True
+    
+    except PermissionError:
+        print("Erro: Sem permissão para escrever no arquivo.")
+    except TypeError as e:
+        print(f"Erro ao converter os dados em JSON: {e}")
+    except Exception as e:
+        print(f"Erro inesperado: {e}")
+
 
 def dispersao(parametro : str, eventos : list):
     # Utilizada para Debug e Analise
@@ -27,6 +64,7 @@ def dispersao(parametro : str, eventos : list):
     print(f"Variancia = {variancia}")
     print(f"desvio padrão = {desv}")
 
+
 def reoganizar_colunas(grupos : list):
     coluna_anterior = grupos[0][0]['coluna']
 
@@ -36,6 +74,7 @@ def reoganizar_colunas(grupos : list):
         coluna_anterior = grupos[i][0]['coluna']
     
     return grupos
+
 
 def agrupar_notas(eventos : list):
     i_lista = 0
@@ -53,14 +92,18 @@ def agrupar_notas(eventos : list):
 
     return reoganizar_colunas(eventos_agrupados)
 
+
 def printar_eventos(eventos : list):
     # Utilizada para Debug e Analise
     for e in eventos: 
         print(f"Nota {e['nota']} | Início: {e['inicio']}s | Duração: {e['duracao']}s | Força: {e['intensidade']} | Coluna: {e['coluna']}")
     print(f"Número de notas: {len(eventos)}")
 
+
 def carregar_eventos_midi(caminho_midi, colunas = 4):
-    mid = mido.MidiFile(caminho_midi)
+    mid = abrir_arquivo_midi(caminho_midi)
+    if mid == None:
+        return False
     ticks_por_beat = mid.ticks_per_beat
     tempo_bpm = 120
     eventos = []
@@ -99,14 +142,22 @@ def carregar_eventos_midi(caminho_midi, colunas = 4):
 
     return sorted(eventos, key=lambda x: x['inicio'])
 
+
 def mid_to_json(file_name):
     # Usar o caminho do seu .mid aqui
     eventos = carregar_eventos_midi(file_name)
+
+    if eventos == False:
+        return False
 
     for e in eventos:
         e["intensidade"] = 127
 
     agrupamentos = agrupar_notas(eventos)
 
-    with open("notas.json", "w", encoding="utf-8") as f:
-        json.dump(agrupamentos, f, indent=2)
+    operacao_sucedida = alterar_arquivo_json(PATH_NOTAS_JSON, agrupamentos)
+    if operacao_sucedida == None:
+        return False
+    if operacao_sucedida == True:
+        return True
+    return False
