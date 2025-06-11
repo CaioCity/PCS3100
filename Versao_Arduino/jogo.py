@@ -205,7 +205,8 @@ def esperar_tecla(botao):
 
 def abrir_arquivo(file):
     if not file.endswith(".json"):
-        raise ValueError(f"Extensão inválida: '{file}' não é um arquivo JSON.")
+        print(f"Extensão inválida: '{file}' não é um arquivo JSON.")
+        return None
     
     try:
         with open(file, 'r', encoding='utf-8') as f:
