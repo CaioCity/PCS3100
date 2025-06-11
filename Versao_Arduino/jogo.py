@@ -359,9 +359,9 @@ def tutorial():
 
 
 def configuracoes():
-    global NOTA_VOLUME
     global MUSICA_FUNDO_VOLUME
     global EFEITOS_SONOROS_VOLUME
+    global NOTA_VOLUME
     global STATUS_LEDS
     global MAX_ERROS
     global arduino
