@@ -4,6 +4,8 @@ import json
 from constants import PATH_NOTAS_JSON
 
 def abrir_arquivo_midi(nome_arquivo):
+    if type(nome_arquivo) is not str:
+        return None
     if not nome_arquivo.endswith((".mid", ".midi")):
         print(f"Extensão inválida: '{nome_arquivo}' não é um arquivo MIDI.")
         return None
@@ -23,6 +25,8 @@ def abrir_arquivo_midi(nome_arquivo):
 
 
 def alterar_arquivo_json(nome_arquivo, dados):
+    if type(nome_arquivo) is not str:
+        return None
     if not nome_arquivo.endswith(".json"):
         print(f"Extensão inválida: '{nome_arquivo}' não é um arquivo JSON.")
         return None
