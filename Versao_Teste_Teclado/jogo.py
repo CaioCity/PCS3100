@@ -5,7 +5,7 @@ import sys
 import extract
 import db_functions
 from constants import PATH_IMAGEM_FUNDO_PRINCIPAL, PATH_MUSICA_FUNDO, PATH_NOTAS_JSON
-from constants import NOME_JOGO, MAX_ERROS, FPS
+from constants import NOME_JOGO, MAX_ERROS, FPS, STATUS_LEDS
 from constants import VERDE, AZUL, AMARELO, VERMELHO, PRETO, CINZA, BRANCO, MARROM, BEGE
 from constants import FONTE_MUITO_PEQUENA, FONTE_PEQUENA, FONTE, FONTE_GRANDE
 from constants import ALTURA_TELA, LARGURA_TELA, ALTURA_LINHA_ACERTO, LARGURA_COLUNA, N_COLUNAS
@@ -82,6 +82,7 @@ def tocar_nota(index : int):
         })
     return
 
+
 # Função que gerencia as durações das notas
 def atualizar_notas():
     agora = pygame.time.get_ticks()
@@ -138,7 +139,7 @@ def desenhar_texto(texto, fonte, cor, centro):
 
 
 def desenhar_direcionais():
-    pygame.draw.rect(TELA, MARROM, (10, int(ALTURA_TELA*0.85) - 30, 175, 110)) 
+    pygame.draw.rect(TELA, MARROM, (10, int(ALTURA_TELA*0.86) - 30, 175, 108)) 
     desenhar_texto("PRETO: SELECIONAR", FONTE_MUITO_PEQUENA, PRETO, (LARGURA_TELA//10 + 44, int(ALTURA_TELA*0.83)))
     desenhar_texto("VERMELHO: ESQUERDA", FONTE_MUITO_PEQUENA, VERMELHO, (LARGURA_TELA//10 + 52, int(ALTURA_TELA*0.83) + 20))
     desenhar_texto("AMARELO: CIMA", FONTE_MUITO_PEQUENA, AMARELO, (LARGURA_TELA//10 + 30, int(ALTURA_TELA*0.83) + 40))
@@ -223,7 +224,7 @@ def menu_principal():
                         case 1:
                             Numero_musica = selecionar_musica(Numero_musica)
                         case 2:
-                            pass # Tutorial
+                            tutorial()
                         case 3:
                             pygame.mixer.music.pause()
                             configuracoes()
@@ -260,27 +261,51 @@ def selecionar_musica(index : int):
                     index = (index + 1) % N_opcoes
                 elif evento.key == pygame.K_RETURN or evento.key == pygame.K_ESCAPE:
                     return index
-       
+
+
+def tutorial():
+    TELA.fill(BEGE)
+    desenhar_texto("Tutorial", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, ALTURA_TELA*2//20 - 10))
+    desenhar_texto("Bem-vindo ao PoliTiles", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*3//20))
+    desenhar_texto("Nesse jogo, seu objetivo é simples:", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*4//20))
+    desenhar_texto("Aperte os botões assim que os círculos", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*5//20))
+    desenhar_texto("estiverem sobre a linha vermelha para pontuar.", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*6//20))
+    desenhar_texto("Como jogar?", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*7//20 + 5))
+    desenhar_texto("1. Observe as 4 colunas (cada uma ligada a um botão)", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*8//20))
+    desenhar_texto("2. Aguarde: círculos coloridos vão cair do topo", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*9//20))
+    desenhar_texto("3. Quando uma nota estiver sobre a linha vermelha,", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*10//20))
+    desenhar_texto("Pressione o botão correspondente", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*11//20))
+    desenhar_texto("Fim de Jogo:", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*12//20 + 5))
+    desenhar_texto("Derrota: O jogo acaba se você perder todas as vidas", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*13//20))
+    desenhar_texto("Vitória: O jogo acaba se a música chegar ao fim", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*14//20))
+    desenhar_texto("OBS: Acertar nota: + Precisão --> + pontos", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*15//20))
+    desenhar_texto("OBS: Errar ou deixar a nota passar = -1 vida.", FONTE_MUITO_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*16//20))
+    desenhar_texto("Pressione o botão preto para sair", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*18//20))
+    pygame.display.flip()
+    esperar_tecla(pygame.K_RETURN)
+    return
+
 
 def configuracoes():
-    global NOTA_VOLUME
     global MUSICA_FUNDO_VOLUME
     global EFEITOS_SONOROS_VOLUME
+    global NOTA_VOLUME
+    global STATUS_LEDS
     global MAX_ERROS
 
     selecao = 0
 
     while True:
         TELA.fill(BEGE)
-        desenhar_texto("Configurações", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, 80))
+        desenhar_texto("Configurações", FONTE_GRANDE, MARROM, (LARGURA_TELA//2, 60))
         desenhar_direcionais()
 
-        opcoes = [f"Música de fundo: {int(MUSICA_FUNDO_VOLUME*100)}%", f"Efeitos sonoros de menu: {int(EFEITOS_SONOROS_VOLUME*100)}%", f"Volume das notas: {int(NOTA_VOLUME*100)}%", f"Erros permitidos: {MAX_ERROS}", "Limpar Recordes", "Adicionar Músicas", "Remover Músicas", "Voltar"]
+        opcoes = [f"Música de fundo: {int(MUSICA_FUNDO_VOLUME*100)}%", f"Efeitos sonoros de menu: {int(EFEITOS_SONOROS_VOLUME*100)}%", f"Volume das notas: {int(NOTA_VOLUME*100)}%", f"LEDS: {"Ligados" if STATUS_LEDS else "Desligados"}", f"Erros permitidos: {MAX_ERROS}", "Limpar Recordes", "Adicionar Músicas", "Remover Músicas", "Voltar"]
         N_opcoes = len(opcoes)
 
         for i, texto in enumerate(opcoes):
             cor = BRANCO if i == selecao else CINZA
-            desenhar_texto(texto, FONTE, cor, (LARGURA_TELA//2, ALTURA_TELA//4 + i * 40))
+            desenhar_texto(texto, FONTE, cor, (LARGURA_TELA//2, ALTURA_TELA//5 + i * 38))
 
         pygame.display.flip()
 
@@ -305,6 +330,8 @@ def configuracoes():
                         case 2:
                             NOTA_VOLUME = max(0.0, NOTA_VOLUME - 0.05)
                         case 3:
+                            STATUS_LEDS = not STATUS_LEDS
+                        case 4:
                             MAX_ERROS = max(MAX_ERROS - 1, 1)
                 elif evento.key == pygame.K_RIGHT:
                     match selecao:
@@ -318,18 +345,20 @@ def configuracoes():
                         case 2:
                             NOTA_VOLUME = min(1.0, NOTA_VOLUME + 0.05)
                         case 3:
+                            STATUS_LEDS = not STATUS_LEDS
+                        case 4:
                             MAX_ERROS+=1
                 elif evento.key == pygame.K_RETURN:
-                    if selecao == 4:
+                    if selecao == 5:
                         db_functions.resetar_recordes()
                         desenhar_texto("Recordes limpos.", FONTE, VERMELHO, (LARGURA_TELA//2, 460))
                         pygame.display.flip()
                         pygame.time.delay(400)
-                    elif selecao == 5:
-                        adicionar_musicas()
                     elif selecao == 6:
-                        remover_musicas()
+                        adicionar_musicas()
                     elif selecao == 7:
+                        remover_musicas()
+                    elif selecao == 8:
                         return
                 elif evento.key == pygame.K_ESCAPE:
                     return
