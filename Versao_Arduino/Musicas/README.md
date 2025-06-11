@@ -1,2 +1,2 @@
 # Músicas
-Aqui devem estar as músicas que podem ser utilizadas no jogo.
+Aqui devem estar os arquivos das músicas que podem ser utilizadas no jogo.
