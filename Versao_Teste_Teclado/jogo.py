@@ -161,7 +161,8 @@ def esperar_tecla(tecla):
 
 def abrir_arquivo(file):
     if not file.endswith(".json"):
-        raise ValueError(f"Extensão inválida: '{file}' não é um arquivo JSON.")
+        print(f"Extensão inválida: '{file}' não é um arquivo JSON.")
+        return None
 
     try:
         with open(file, 'r', encoding='utf-8') as f:
@@ -265,7 +266,7 @@ def selecionar_musica(index : int):
         desenhar_texto("Pressione o botão preto para sair", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*2//3))
         pygame.display.flip()
         esperar_tecla(pygame.K_RETURN)
-        return
+        return 0
 
     while True:
         TELA.fill(BEGE)
@@ -377,6 +378,8 @@ def configuracoes():
                         case 4:
                             MAX_ERROS+=1
                 elif evento.key == pygame.K_RETURN:
+                    if selecao == 3:
+                        STATUS_LEDS = not STATUS_LEDS
                     if selecao == 5:
                         operacao_sucedida = db_functions.resetar_recordes()
                         if operacao_sucedida == True:
