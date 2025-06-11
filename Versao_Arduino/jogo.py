@@ -205,7 +205,8 @@ def esperar_tecla(botao):
 
 def abrir_arquivo(file):
     if not file.endswith(".json"):
-        raise ValueError(f"Extensão inválida: '{file}' não é um arquivo JSON.")
+        print(f"Extensão inválida: '{file}' não é um arquivo JSON.")
+        return None
     
     try:
         with open(file, 'r', encoding='utf-8') as f:
@@ -309,7 +310,7 @@ def selecionar_musica(index : int):
         desenhar_texto("Pressione o botão preto para sair", FONTE_PEQUENA, CINZA, (LARGURA_TELA//2, ALTURA_TELA*2//3))
         pygame.display.flip()
         esperar_tecla(BOT_PRETO)
-        return
+        return 0
 
     while True:
         TELA.fill(BEGE)
@@ -430,6 +431,12 @@ def configuracoes():
                         case 4:
                             MAX_ERROS+=1
                 elif evento.botao == BOT_PRETO:
+                    if selecao == 3:
+                        STATUS_LEDS = not STATUS_LEDS
+                        if STATUS_LEDS == True:
+                            arduino.write("ON\n".encode())
+                        if STATUS_LEDS == False:
+                            arduino.write("OFF\n".encode())
                     if selecao == 5:
                         operacao_sucedida = db_functions.resetar_recordes()
                         if operacao_sucedida == True:

@@ -42,9 +42,9 @@ EFEITOS_SONOROS_VOLUME = 0.10
 MUSICA_FUNDO_VOLUME = 0.10
 pygame.mixer.init()
 SONS = [
-    pygame.mixer.Sound('sons/piano1.wav'),
-    pygame.mixer.Sound('sons/piano2.wav'),
-    pygame.mixer.Sound('sons/piano3.wav'),
-    pygame.mixer.Sound('sons/piano4.wav')
+    pygame.mixer.Sound('Sons/piano1.wav'),
+    pygame.mixer.Sound('Sons/piano2.wav'),
+    pygame.mixer.Sound('Sons/piano3.wav'),
+    pygame.mixer.Sound('Sons/piano4.wav')
 ] # Gerar um "som ao toque" para os botões no menu
-PATH_MUSICA_FUNDO = 'sons/moonlight-sonata-classical-piano-beethoven.mp3'
+PATH_MUSICA_FUNDO = 'Sons/moonlight-sonata-classical-piano-beethoven.mp3'
