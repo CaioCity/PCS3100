@@ -303,6 +303,9 @@ def selecionar_musica(index : int):
     N_opcoes = len(opcoes)
     recordes = db_functions.obter_lista_recordes()
 
+    if index >= N_opcoes:
+        index = 0
+
     if N_opcoes == 0:
         TELA.fill(BEGE)
         desenhar_texto("Sem Músicas", FONTE_GRANDE, VERMELHO, (LARGURA_TELA//2, ALTURA_TELA//3))
@@ -903,6 +906,8 @@ def jogar():
 
 menu_principal()
 
+
+arduino.write("ON\n".encode())
 LER = False
 arduino.close()
 pygame.quit()
