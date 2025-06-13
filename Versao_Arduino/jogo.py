@@ -588,6 +588,7 @@ def adicionar_musicas():
 
 
 def remover_musicas():
+    global Numero_musica
     titulos = db_functions.obter_titulos()
     N_titulos = len(titulos)
     N_opcoes = 3
@@ -632,6 +633,7 @@ def remover_musicas():
                         desenhar_texto("Música Removida.", FONTE, VERMELHO, (LARGURA_TELA//2, 450))
                         titulos = db_functions.obter_titulos()
                         N_titulos = len(titulos)
+                        Numero_musica = 0
                         selecao = 0
                         if N_titulos != 0:
                             index = (index - 1) % N_titulos
@@ -658,6 +660,7 @@ def remover_musicas():
                         titulos = db_functions.obter_titulos()
                         N_titulos = len(titulos)
                         selecao = 0
+                        Numero_musica = 0
                         if N_titulos != 0:
                             index = (index - 1) % N_titulos
                         pygame.display.flip()
